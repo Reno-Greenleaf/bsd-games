@@ -172,7 +172,7 @@ for file in *; do
 done
 def_build_dirs=${def_build_dirs## }
 
-ask "Games to build" build_dirs "$def_build_dirs"
+ask "Games to build" build_dirs "snake"
 
 # Normalise white space in build_dirs
 build_dirs="`echo $build_dirs`"

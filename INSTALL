@@ -37,7 +37,7 @@ You need the following to build this distribution:
   hunt) since they lack the <ifaddrs.h> header.
 
 * ncurses; other curses / termcap implementations might work, but are
-  unsupported.
+  unsupported. libncurses-dev apt package.
 
 * lex and yacc; by default this package will use flex and bison, but
   byacc will probably work as well.
