@@ -87,7 +87,7 @@ struct point {
 #define LF	'\n'
 #define DEL	'\177'
 
-#define ME		'I'
+#define ME			'I'
 #define SNAKEHEAD	'S'
 #define SNAKETAIL	's'
 #define TREASURE	'$'
@@ -116,28 +116,25 @@ int	lcnt, ccnt;	/* user's idea of screen size */
 int	chunk;		/* amount of money given at a time */
 
 void		chase(struct point *, struct point *);
-int		chk(const struct point *);
+int 		chk(const struct point *);
 void		drawbox(void);
 void		flushi(void);
-void		home(void);
-void		length(int);
-void		logit(const char *);
-int		main(int, char **);
+void		length(int); // message about how many moves you made
+void		logit(const char *); // log a message
 void		mainloop(void) __attribute__((__noreturn__));
-struct point   *point(struct point *, int, int);
-int		post(int, int);
-int		pushsnake(void);
-void		right(const struct point *);
+struct point   *point(struct point *, int, int); // create (fill) a point
+int			post(int, int);
+int			pushsnake(void);
 void		setup(void);
 void		snap(void);
-void		snrand(struct point *);
-void		spacewarp(int);
-void		stop(int) __attribute__((__noreturn__));
-int		stretch(const struct point *);
-void		surround(struct point *);
-void		suspend(void);
-void		win(const struct point *);
-void		winnings(int);
+void		snrand(struct point *); // find free random point
+void		spacewarp(int); // warp to a free random point
+void		stop(int) __attribute__((__noreturn__)); // end the game
+int			stretch(const struct point *);
+void		surround(struct point *); // animation of snake catching you
+void		suspend(void); // pause, put the game to background/sleep mode
+void		win(const struct point *); // animation of victory/escape
+void		winnings(int); // update score (money collected)
 
 int main(int argc, char **argv)
 {
@@ -894,7 +891,7 @@ int pushsnake()
 
 int chk(const struct point *sp)
 {
-	int     j;
+	int j;
 
 	if (same(sp, &money)) {
 		pchar(sp, TREASURE);
