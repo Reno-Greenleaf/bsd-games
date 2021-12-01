@@ -139,10 +139,7 @@ void		suspend(void);
 void		win(const struct point *);
 void		winnings(int);
 
-int
-main(argc, argv)
-	int     argc;
-	char  **argv;
+int main(int argc, char **argv)
 {
 	int     ch, i;
 	time_t tv;
@@ -247,10 +244,7 @@ main(argc, argv)
 	return (0);
 }
 
-struct point *
-point(ps, x, y)
-	struct point *ps;
-	int     x, y;
+struct point * point(struct point *ps, int x, int y)
 {
 	ps->col = x;
 	ps->line = y;
@@ -258,8 +252,7 @@ point(ps, x, y)
 }
 
 /* Main command loop */
-void
-mainloop()
+void mainloop()
 {
 	int     k;
 	int     repeat = 1;
@@ -447,8 +440,7 @@ mainloop()
 /*
  * setup the board
  */
-void
-setup()
+void setup()
 {
 	int     i;
 
@@ -464,8 +456,7 @@ setup()
 	refresh();
 }
 
-void
-drawbox()
+void drawbox()
 {
 	int i;
 
@@ -479,9 +470,7 @@ drawbox()
 	}
 }
 
-void
-snrand(sp)
-	struct point *sp;
+void snrand(struct point *sp)
 {
 	struct point p;
 	int i;
@@ -509,9 +498,7 @@ snrand(sp)
 	*sp = p;
 }
 
-int
-post(iscore, flag)
-	int     iscore, flag;
+int post(int iscore, int flag)
 {
 	short   score = iscore;
 	short   uid;
@@ -576,8 +563,7 @@ post(iscore, flag)
  * overshooting.  This loses horribly at 9600 baud, but works nicely
  * if the terminal gets behind.
  */
-void
-flushi()
+void flushi()
 {
 	tcflush(0, TCIFLUSH);
 }
@@ -593,9 +579,7 @@ const float   absv[8] = {
 };
 int     oldw = 0;
 
-void
-chase(np, sp)
-	struct point *sp, *np;
+void chase(struct point *np, struct point *sp)
 {
 	/* this algorithm has bugs; otherwise the snake would get too good */
 	struct point d;
@@ -655,9 +639,7 @@ chase(np, sp)
 	point(np, sp->col + mx[w], sp->line + my[w]);
 }
 
-void
-spacewarp(w)
-	int     w;
+void spacewarp(int w)
 {
 	struct point p;
 	int     j;
@@ -689,8 +671,7 @@ spacewarp(w)
 	winnings(cashvalue);
 }
 
-void
-snap()
+void snap()
 {
 #if 0 /* This code doesn't really make sense.  */
 	struct point p;
@@ -736,9 +717,7 @@ snap()
 	refresh();
 }
 
-int
-stretch(ps)
-	const struct point *ps;
+int stretch(const struct point *ps)
 {
 	struct point p;
 
@@ -784,9 +763,7 @@ stretch(ps)
 	return (0);
 }
 
-void
-surround(ps)
-	struct point *ps;
+void surround(struct point *ps)
 {
 	int     j;
 
@@ -828,9 +805,7 @@ surround(ps)
 	delay(6);
 }
 
-void
-win(ps)
-	const struct point *ps;
+void win(const struct point *ps)
 {
 	struct point x;
 	int     j, k;
@@ -861,8 +836,7 @@ win(ps)
 	}
 }
 
-int
-pushsnake()
+int pushsnake()
 {
 	int     i, bonus;
 	int     issame = 0;
@@ -918,9 +892,7 @@ pushsnake()
 	return (0);
 }
 
-int
-chk(sp)
-	const struct point *sp;
+int chk(const struct point *sp)
 {
 	int     j;
 
@@ -956,18 +928,14 @@ chk(sp)
 	return (0);
 }
 
-void
-winnings(won)
-	int     won;
+void winnings(int won)
 {
 	if (won > 0) {
 		mvprintw(1, 1, "$%d", won);
 	}
 }
 
-void
-stop(dummy)
-	int dummy __attribute__((__unused__));
+void stop(int dummy __attribute__((__unused__)))
 {
 	signal(SIGINT, SIG_IGN);
 	endwin();
@@ -975,8 +943,7 @@ stop(dummy)
 	exit(0);
 }
 
-void
-suspend()
+void suspend()
 {
 	endwin();
 	kill(getpid(), SIGTSTP);
@@ -984,16 +951,12 @@ suspend()
 	winnings(cashvalue);
 }
 
-void
-length(num)
-	int     num;
+void length(int num)
 {
 	printf("You made %d moves.\n", num);
 }
 
-void
-logit(msg)
-	const char   *msg;
+void logit(const char *msg)
 {
 	time_t  t;
 

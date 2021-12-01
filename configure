@@ -325,7 +325,7 @@ echo
 echo "It is presumed in some places by the Makefiles that the compiler"
 echo "will be some form of gcc."
 ask "C compiler" cc gcc
-if building_in dab; then
+if building_in snake; then
     ask "C++ compiler" cxx g++
 fi
 ask "Optimize flags" optimize_flags "-g -O2"
@@ -334,7 +334,7 @@ echo "The default warning flags should give a compile with few warnings."
 # -Wbad-function-cast and -Wshadow give lots of warnings that are basically
 # harmless.
 ask "C compiler warning flags" warning_flags "-Wall -W -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings"
-if building_in dab; then
+if building_in snake; then
     ask "C++ compiler warning flags" cxx_warning_flags "-Wall -W -Wpointer-arith -Wcast-align -Wcast-qual -Wwrite-strings"
 fi
 echo
@@ -666,7 +666,7 @@ EOF
 for dir in $make_dirs; do
     udir=$(slashdot_to_under $dir)
     eval clean_$udir=
-    if [ $dir = dab ]; then
+    if [ $dir = snake ]; then
 	cat >>GNUmakefile <<EOF
 include $dir/Makefrag
 
@@ -742,7 +742,7 @@ while read prog objs; do
 	    eval $obj_dep_var=y
 	fi
     done
-    if [ $dir = dab ]; then
+    if [ $dir = snake ]; then
 	ccvar=CXX
     else
 	ccvar=CC
