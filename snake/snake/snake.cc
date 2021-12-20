@@ -72,6 +72,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include <termios.h>
 
 #include "pathnames.h"
+#include "snake.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
 
@@ -114,27 +115,6 @@ FILE *logfile;
 
 int	lcnt, ccnt;	/* user's idea of screen size */
 int	chunk;		/* amount of money given at a time */
-
-void		chase(struct point *, struct point *);
-int 		chk(const struct point *);
-void		drawbox(void);
-void		flushi(void);
-void		length(int); // message about how many moves you made
-void		logit(const char *); // log a message
-void		mainloop(void) __attribute__((__noreturn__));
-struct point   *point(struct point *, int, int); // create (fill) a point
-int			post(int, int);
-int			pushsnake(void);
-void		setup(void);
-void		snap(void);
-void		snrand(struct point *); // find free random point
-void		spacewarp(int); // warp to a free random point
-void		stop(int) __attribute__((__noreturn__)); // end the game
-int			stretch(const struct point *);
-void		surround(struct point *); // animation of snake catching you
-void		suspend(void); // pause, put the game to background/sleep mode
-void		win(const struct point *); // animation of victory/escape
-void		winnings(int); // update score (money collected)
 
 int main(int argc, char **argv)
 {
