@@ -73,6 +73,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 
 #include "pathnames.h"
 #include "snake.h"
+#include "log.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
 
@@ -104,7 +105,11 @@ struct point {
 struct point you;
 struct point money;
 struct point finish;
-struct point snake[6];
+
+namespace snake {
+	Log log;
+	struct point snake[6];
+}
 
 int     loot, penalty;
 int     moves;
@@ -121,6 +126,8 @@ int main(int argc, char **argv)
 	int     ch, i;
 	time_t tv;
 
+	snake::log.load();
+
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
 	if (rawscores < 0) {
@@ -128,11 +135,7 @@ int main(int argc, char **argv)
 		sleep(2);
 	} else if (rawscores < 3)
 		exit(1);
-	logfile = fopen(_PATH_LOGFILE, "a");
-	if (logfile == NULL) {
-		warn("fopen %s", _PATH_LOGFILE);
-		sleep(2);
-	}
+
 	setregid(getgid(), getgid());
 
 	(void) time(&tv);
@@ -211,10 +214,10 @@ int main(int argc, char **argv)
 	snrand(&finish);
 	snrand(&you);
 	snrand(&money);
-	snrand(&snake[0]);
+	snrand(&snake::snake[0]);
 
 	for (i = 1; i < 6; i++)
-		chase(&snake[i], &snake[i - 1]);
+		chase(&snake::snake[i], &snake::snake[i - 1]);
 	setup();
 	mainloop();
 	/* NOTREACHED */
@@ -264,7 +267,7 @@ void mainloop()
 		case 0177:	/* del or end of file */
 			endwin();
 			length(moves);
-			logit("quit");
+			snake::log.write("quit", cashvalue, ccnt, lcnt);
 			exit(0);
 		case CTRL('l'):
 			setup();
@@ -403,7 +406,7 @@ void mainloop()
 				endwin();
 				printf("You have won with $%d.\n", cashvalue);
 				fflush(stdout);
-				logit("won");
+				snake::log.write("won", cashvalue, ccnt, lcnt);
 				post(cashvalue, 1);
 				length(moves);
 				exit(0);
@@ -426,9 +429,9 @@ void setup()
 	pchar(&finish, GOAL);
 	pchar(&money, TREASURE);
 	for (i = 1; i < 6; i++) {
-		pchar(&snake[i], SNAKETAIL);
+		pchar(&snake::snake[i], SNAKETAIL);
 	}
-	pchar(&snake[0], SNAKEHEAD);
+	pchar(&snake::snake[0], SNAKEHEAD);
 	drawbox();
 	refresh();
 }
@@ -466,7 +469,7 @@ void snrand(struct point *sp)
 		if (same(&p, &finish))
 			continue;
 		for (i = 0; i < 6; i++)
-			if (same(&p, &snake[i]))
+			if (same(&p, &snake::snake[i]))
 				break;
 		if (i < 6)
 			continue;
@@ -826,20 +829,20 @@ int pushsnake()
 	 * So I have taken the call to times out.
 	 */
 	for (i = 4; i >= 0; i--)
-		if (same(&snake[i], &snake[5]))
+		if (same(&snake::snake[i], &snake::snake[5]))
 			issame++;
 	if (!issame)
-		pchar(&snake[5], ' ');
+		pchar(&snake::snake[5], ' ');
 	/* Need the following to catch you if you step on the snake's tail */
-	tmp.col = snake[5].col;
-	tmp.line = snake[5].line;
+	tmp.col = snake::snake[5].col;
+	tmp.line = snake::snake[5].line;
 	for (i = 4; i >= 0; i--)
-		snake[i + 1] = snake[i];
-	chase(&snake[0], &snake[1]);
-	pchar(&snake[1], SNAKETAIL);
-	pchar(&snake[0], SNAKEHEAD);
+		snake::snake[i + 1] = snake::snake[i];
+	chase(&snake::snake[0], &snake::snake[1]);
+	pchar(&snake::snake[1], SNAKETAIL);
+	pchar(&snake::snake[0], SNAKEHEAD);
 	for (i = 0; i < 6; i++) {
-		if (same(&snake[i], &you) || same(&tmp, &you)) {
+		if (same(&snake::snake[i], &you) || same(&tmp, &you)) {
 			surround(&you);
 			i = (cashvalue) % 10;
 			bonus = ((random() >> 8) & 0377) % 10;
@@ -848,7 +851,7 @@ int pushsnake()
 			delay(30);
 			if (bonus == i) {
 				spacewarp(1);
-				logit("bonus");
+				snake::log.write("bonus", cashvalue, ccnt, lcnt);
 				flushi();
 				return (1);
 			}
@@ -861,7 +864,7 @@ int pushsnake()
 				printf("\nThe snake ate you.  You owe $%d.\n",
 				    -cashvalue);
 			}
-			logit("eaten");
+			snake::log.write("eaten", cashvalue, ccnt, lcnt);
 			length(moves);
 			exit(0);
 		}
@@ -881,12 +884,12 @@ int chk(const struct point *sp)
 		pchar(sp, GOAL);
 		return (3);
 	}
-	if (same(sp, &snake[0])) {
+	if (same(sp, &snake::snake[0])) {
 		pchar(sp, SNAKEHEAD);
 		return (4);
 	}
 	for (j = 1; j < 6; j++) {
-		if (same(sp, &snake[j])) {
+		if (same(sp, &snake::snake[j])) {
 			pchar(sp, SNAKETAIL);
 			return (4);
 		}
@@ -931,16 +934,4 @@ void suspend()
 void length(int num)
 {
 	printf("You made %d moves.\n", num);
-}
-
-void logit(const char *msg)
-{
-	time_t  t;
-
-	if (logfile != NULL) {
-		time(&t);
-		fprintf(logfile, "%s $%d %dx%d %s %s",
-		    getlogin(), cashvalue, lcnt, ccnt, msg, ctime(&t));
-		fflush(logfile);
-	}
 }

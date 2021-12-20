@@ -26,22 +26,37 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-void		chase(struct point *, struct point *);
-int 		chk(const struct point *);
-void		drawbox(void);
-void		flushi(void);
-void		length(int); // message about how many moves you made
-void		mainloop(void) __attribute__((__noreturn__));
-struct point   *point(struct point *, int, int); // create (fill) a point
-int			post(int, int);
-int			pushsnake(void);
-void		setup(void);
-void		snap(void);
-void		snrand(struct point *); // find free random point
-void		spacewarp(int); // warp to a free random point
-void		stop(int) __attribute__((__noreturn__)); // end the game
-int			stretch(const struct point *);
-void		surround(struct point *); // animation of snake catching you
-void		suspend(void); // pause, put the game to background/sleep mode
-void		win(const struct point *); // animation of victory/escape
-void		winnings(int); // update score (money collected)
+#include "log.h"
+#include "pathnames.h"
+#include <ctime>
+#include <unistd.h>
+#include <err.h>
+
+using namespace snake;
+
+bool Log::load()
+{
+	storage = fopen(_PATH_LOGFILE, "a");
+
+	if (storage == NULL) {
+		warn("fopen %s", _PATH_LOGFILE);
+		sleep(2);
+		return false;
+	}
+
+	return true;
+}
+
+bool Log::write(const char *message, int cashvalue, int height, int width)
+{
+	time_t  t;
+
+	if (storage != NULL) {
+		time(&t);
+		fprintf(storage, "%s $%d %dx%d %s %s", getlogin(), cashvalue, height, width, message, ctime(&t));
+		fflush(storage);
+		return true;
+	}
+
+	return false;
+}
