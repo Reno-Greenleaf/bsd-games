@@ -74,6 +74,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "pathnames.h"
 #include "snake.h"
 #include "log.h"
+#include "screen.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
 
@@ -99,7 +100,6 @@ struct point {
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-#define pchar(point, c)	mvaddch((point)->line + 1, (point)->col + 1, (c))
 #define delay(t)	usleep(t * 50000);
 
 struct point you;
@@ -108,6 +108,7 @@ struct point finish;
 
 namespace snake {
 	Log log;
+	Screen screen;
 	struct point snake[6];
 }
 
@@ -128,8 +129,13 @@ int main(int argc, char **argv)
 
 	snake::log.load();
 
+	if (!snake::screen.load()) {
+		snake::log.write("error: the screen wasn't prepared.", 0, 0, 0);
+		exit(1);
+	}
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
+
 	if (rawscores < 0) {
 		warn("open %s", _PATH_RAWSCORES);
 		sleep(2);
@@ -169,7 +175,6 @@ int main(int argc, char **argv)
 	srandom((int) tv);
 
 	penalty = loot = 0;
-	initscr();
 	cbreak();
 	noecho();
 #ifdef KEY_LEFT
@@ -181,10 +186,12 @@ int main(int argc, char **argv)
 		ccnt = COLS - 2;
 
 	i = MIN(lcnt, ccnt);
+
 	if (i < 4) {
 		endwin();
 		errx(1, "screen too small for a fair game.");
 	}
+
 	/*
 	 * chunk is the amount of money the user gets for each $.
 	 * The formula below tries to be fair for various screen sizes.
@@ -218,6 +225,7 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < 6; i++)
 		chase(&snake::snake[i], &snake::snake[i - 1]);
+
 	setup();
 	mainloop();
 	/* NOTREACHED */
@@ -328,11 +336,11 @@ void mainloop()
 			case '\b':
 				if (you.col > 0) {
 					if ((fast) || (k == 1))
-						pchar(&you, ' ');
+						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
 					you.col--;
 					if ((fast) || (k == repeat) ||
 					    (you.col == 0))
-						pchar(&you, ME);
+						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
 				}
 				break;
 			case 'f':
@@ -343,11 +351,11 @@ void mainloop()
 			case ' ':
 				if (you.col < ccnt - 1) {
 					if ((fast) || (k == 1))
-						pchar(&you, ' ');
+						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
 					you.col++;
 					if ((fast) || (k == repeat) ||
 					    (you.col == ccnt - 1))
-						pchar(&you, ME);
+						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
 				}
 				break;
 			case CTRL('p'):
@@ -359,11 +367,11 @@ void mainloop()
 			case 'i':
 				if (you.line > 0) {
 					if ((fast) || (k == 1))
-						pchar(&you, ' ');
+						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
 					you.line--;
 					if ((fast) || (k == repeat) ||
 					    (you.line == 0))
-						pchar(&you, ME);
+						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
 				}
 				break;
 			case CTRL('n'):
@@ -376,19 +384,20 @@ void mainloop()
 			case 'm':
 				if (you.line + 1 < lcnt) {
 					if ((fast) || (k == 1))
-						pchar(&you, ' ');
+						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
 					you.line++;
 					if ((fast) || (k == repeat) ||
 					    (you.line == lcnt - 1))
-						pchar(&you, ME);
+						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
 				}
 				break;
 			}
 
 			if (same(&you, &money)) {
 				loot += 25;
+
 				if (k < repeat)
-					pchar(&you, ' ');
+					snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
 				do {
 					snrand(&money);
 				} while ((money.col == finish.col &&
@@ -396,7 +405,8 @@ void mainloop()
 				    (money.col < 5 && money.line == 0) ||
 				    (money.col == you.col &&
 					money.line == you.line));
-				pchar(&money, TREASURE);
+
+				snake::screen.print(TREASURE, money.col+1, money.line+1, COLOR_YELLOW);
 				winnings(cashvalue);
 				continue;
 			}
@@ -425,13 +435,16 @@ void setup()
 	int     i;
 
 	erase();
-	pchar(&you, ME);
-	pchar(&finish, GOAL);
-	pchar(&money, TREASURE);
+	snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
+	snake::screen.print(GOAL, finish.col+1, finish.line+1, COLOR_WHITE);
+	snake::screen.print(TREASURE, money.col+1, money.line+1, COLOR_YELLOW);
+
 	for (i = 1; i < 6; i++) {
-		pchar(&snake::snake[i], SNAKETAIL);
+		snake::screen.print(SNAKETAIL, snake::snake[i].col+1, snake::snake[i].line+1, COLOR_WHITE);
 	}
-	pchar(&snake::snake[0], SNAKEHEAD);
+
+	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, COLOR_WHITE);
+
 	drawbox();
 	refresh();
 }
@@ -441,12 +454,12 @@ void drawbox()
 	int i;
 
 	for (i = 1; i <= ccnt; i++) {
-		mvaddch(0, i, '-');
-		mvaddch(lcnt + 1, i, '-');
+		snake::screen.print('-', i, 0, COLOR_WHITE);
+		snake::screen.print('-', i, lcnt+1, COLOR_WHITE);
 	}
 	for (i = 0; i <= lcnt + 1; i++) {
-		mvaddch(i, 0, '|');
-		mvaddch(i, ccnt + 1, '|');
+		snake::screen.print('|', 0, i, COLOR_WHITE);
+		snake::screen.print('|', ccnt+1, i, COLOR_WHITE);
 	}
 }
 
@@ -627,10 +640,13 @@ void spacewarp(int w)
 
 	snrand(&you);
 	point(&p, COLS / 2 - 8, LINES / 2 - 1);
+
 	if (p.col < 0)
 		p.col = 0;
+
 	if (p.line < 0)
 		p.line = 0;
+
 	if (w) {
 		str = "BONUS!!!";
 		loot = loot - penalty;
@@ -639,14 +655,16 @@ void spacewarp(int w)
 		str = "SPACE WARP!!!";
 		penalty += loot / PENALTY;
 	}
+
 	for (j = 0; j < 3; j++) {
 		erase();
 		refresh();
 		delay(5);
-		mvaddstr(p.line + 1, p.col + 1, str);
+		snake::screen.print(str, p.col+1, p.line+1, COLOR_RED);
 		refresh();
 		delay(10);
 	}
+
 	setup();
 	winnings(cashvalue);
 }
@@ -671,10 +689,10 @@ void snap()
 #endif
 	if (!stretch(&money))
 		if (!stretch(&finish)) {
-			pchar(&you, '?');
+			snake::screen.print('?', you.col+1, you.line+1, COLOR_WHITE);
 			refresh();
 			delay(10);
-			pchar(&you, ME);
+			snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
 		}
 #if 0
 	if (you.line < 3) {
@@ -704,42 +722,61 @@ int stretch(const struct point *ps)
 	point(&p, you.col, you.line);
 	if ((abs(ps->col - you.col) < (ccnt / 12)) && (you.line != ps->line)) {
 		if (you.line < ps->line) {
+
 			for (p.line = you.line + 1; p.line <= ps->line; p.line++)
-				pchar(&p, 'v');
+				snake::screen.print('v', p.col+1, p.line+1, COLOR_WHITE);
+
 			refresh();
 			delay(10);
+
 			for (; p.line > you.line; p.line--)
 				chk(&p);
+
 		} else {
+
 			for (p.line = you.line - 1; p.line >= ps->line; p.line--)
-				pchar(&p, '^');
+				snake::screen.print('^', p.col+1, p.line+1, COLOR_WHITE);
+
 			refresh();
 			delay(10);
+
 			for (; p.line < you.line; p.line++)
 				chk(&p);
 		}
 		return (1);
 	} else
+
 		if ((abs(ps->line - you.line) < (lcnt/7))
 		    && (you.col != ps->col)) {
 			p.line = you.line;
+
 			if (you.col < ps->col) {
+
 				for (p.col = you.col + 1; p.col <= ps->col; p.col++)
-					pchar(&p, '>');
+					snake::screen.print('>', p.col+1, p.line+1, COLOR_WHITE);
+
 				refresh();
 				delay(10);
+
 				for (; p.col > you.col; p.col--)
 					chk(&p);
+
 			} else {
+
 				for (p.col = you.col - 1; p.col >= ps->col; p.col--)
-					pchar(&p, '<');
+					snake::screen.print('<', p.col+1, p.line+1, COLOR_WHITE);
+
 				refresh();
 				delay(10);
+
 				for (; p.col < you.col; p.col++)
 					chk(&p);
+
 			}
+
 			return (1);
 		}
+
 	return (0);
 }
 
@@ -749,38 +786,45 @@ void surround(struct point *ps)
 
 	if (ps->col == 0)
 		ps->col++;
+
 	if (ps->line == 0)
 		ps->line++;
+
 	if (ps->line == LINES - 1)
 		ps->line--;
+
 	if (ps->col == COLS - 1)
 		ps->col--;
-	mvaddstr(ps->line, ps->col, "/*\\");
-	mvaddstr(ps->line + 1, ps->col, "* *");
-	mvaddstr(ps->line + 2, ps->col, "\\*/");
+
+	snake::screen.print("/*\\", ps->col, ps->line, COLOR_WHITE);
+	snake::screen.print("* *", ps->col, ps->line+1, COLOR_WHITE);
+	snake::screen.print("\\*/", ps->col, ps->line+2, COLOR_WHITE);
+
 	for (j = 0; j < 20; j++) {
-		pchar(ps, '@');
+		snake::screen.print('@', ps->col+1, ps->line+1, COLOR_WHITE);
 		refresh();
 		delay(1);
-		pchar(ps, ' ');
+		snake::screen.print(' ', ps->col+1, ps->line+1, COLOR_BLACK);
 		refresh();
 		delay(1);
 	}
+
 	if (post(cashvalue, 0)) {
-		mvaddstr(ps->line, ps->col, "   ");
-		mvaddstr(ps->line + 1, ps->col, "o.o");
-		mvaddstr(ps->line + 2, ps->col, "\\_/");
+		snake::screen.print("   ", ps->col, ps->line, COLOR_WHITE);
+		snake::screen.print("o.o", ps->col, ps->line+1, COLOR_WHITE);
+		snake::screen.print("\\_/", ps->col, ps->line+2, COLOR_WHITE);
 		refresh();
 		delay(6);
-		mvaddstr(ps->line, ps->col, "   ");
-		mvaddstr(ps->line + 1, ps->col, "o.-");
-		mvaddstr(ps->line + 2, ps->col, "\\_/");
+		snake::screen.print("   ", ps->col, ps->line, COLOR_WHITE);
+		snake::screen.print("o.-", ps->col, ps->line+1, COLOR_WHITE);
+		snake::screen.print("\\_/", ps->col, ps->line+2, COLOR_WHITE);
 		refresh();
 		delay(6);
 	}
-	mvaddstr(ps->line, ps->col, "   ");
-	mvaddstr(ps->line + 1, ps->col, "o.o");
-	mvaddstr(ps->line + 2, ps->col, "\\_/");
+
+	snake::screen.print("   ", ps->col, ps->line, COLOR_WHITE);
+	snake::screen.print("o.o", ps->col, ps->line+1, COLOR_WHITE);
+	snake::screen.print("\\_/", ps->col, ps->line+2, COLOR_WHITE);
 	refresh();
 	delay(6);
 }
@@ -793,24 +837,31 @@ void win(const struct point *ps)
 
 	boxsize = fast ? 10 : 4;
 	point(&x, ps->col, ps->line);
+
 	for (j = 1; j < boxsize; j++) {
+
 		for (k = 0; k < j; k++) {
-			pchar(&x, '#');
+			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
 			x.line--;
 		}
+
 		for (k = 0; k < j; k++) {
-			pchar(&x, '#');
+			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
 			x.col++;
 		}
+
 		j++;
+
 		for (k = 0; k < j; k++) {
-			pchar(&x, '#');
+			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
 			x.line++;
 		}
+
 		for (k = 0; k < j; k++) {
-			pchar(&x, '#');
+			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
 			x.col--;
 		}
+
 		refresh();
 		delay(1);
 	}
@@ -829,19 +880,26 @@ int pushsnake()
 	 * So I have taken the call to times out.
 	 */
 	for (i = 4; i >= 0; i--)
+
 		if (same(&snake::snake[i], &snake::snake[5]))
 			issame++;
+
 	if (!issame)
-		pchar(&snake::snake[5], ' ');
+		snake::screen.print(' ', snake::snake[5].col+1, snake::snake[5].line+1, COLOR_WHITE);
+
 	/* Need the following to catch you if you step on the snake's tail */
 	tmp.col = snake::snake[5].col;
 	tmp.line = snake::snake[5].line;
+
 	for (i = 4; i >= 0; i--)
 		snake::snake[i + 1] = snake::snake[i];
+
 	chase(&snake::snake[0], &snake::snake[1]);
-	pchar(&snake::snake[1], SNAKETAIL);
-	pchar(&snake::snake[0], SNAKEHEAD);
+	snake::screen.print(SNAKETAIL, snake::snake[1].col+1, snake::snake[1].line+1, COLOR_WHITE);
+	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, COLOR_WHITE);
+
 	for (i = 0; i < 6; i++) {
+
 		if (same(&snake::snake[i], &you) || same(&tmp, &you)) {
 			surround(&you);
 			i = (cashvalue) % 10;
@@ -849,12 +907,14 @@ int pushsnake()
 			mvprintw(lcnt + 1, 0, "%d\n", bonus);
 			refresh();
 			delay(30);
+
 			if (bonus == i) {
 				spacewarp(1);
 				snake::log.write("bonus", cashvalue, ccnt, lcnt);
 				flushi();
 				return (1);
 			}
+
 			flushi();
 			endwin();
 			if (loot >= penalty) {
@@ -877,34 +937,43 @@ int chk(const struct point *sp)
 	int j;
 
 	if (same(sp, &money)) {
-		pchar(sp, TREASURE);
+		snake::screen.print(TREASURE, sp->col+1, sp->line+1, COLOR_YELLOW);
 		return (2);
 	}
+
 	if (same(sp, &finish)) {
-		pchar(sp, GOAL);
+		snake::screen.print(GOAL, sp->col+1, sp->line+1, COLOR_WHITE);
 		return (3);
 	}
+
 	if (same(sp, &snake::snake[0])) {
-		pchar(sp, SNAKEHEAD);
+		snake::screen.print(SNAKEHEAD, sp->col+1, sp->line+1, COLOR_WHITE);
 		return (4);
 	}
+
 	for (j = 1; j < 6; j++) {
+
 		if (same(sp, &snake::snake[j])) {
-			pchar(sp, SNAKETAIL);
+			snake::screen.print(SNAKETAIL, sp->col+1, sp->line+1, COLOR_WHITE);
 			return (4);
 		}
 	}
+
 	if ((sp->col < 4) && (sp->line == 0)) {
 		winnings(cashvalue);
+
 		if ((you.line == 0) && (you.col < 4))
-			pchar(&you, ME);
+			snake::screen.print(ME, sp->col+1, sp->line+1, COLOR_WHITE);
+
 		return (5);
 	}
+
 	if (same(sp, &you)) {
-		pchar(sp, ME);
+		snake::screen.print(ME, sp->col+1, sp->line+1, COLOR_WHITE);
 		return (1);
 	}
-	pchar(sp, ' ');
+
+	snake::screen.print(' ', sp->col+1, sp->line+1, COLOR_WHITE);
 	return (0);
 }
 

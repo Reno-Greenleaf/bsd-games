@@ -26,21 +26,44 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef LOG_H
-#define LOG_H
+#include <curses.h>
+#include "screen.h"
 
-#include <string>
-#include <stdio.h>
+#define YELLOW
 
-namespace snake {
-	class Log
-	{
-		private:
-			FILE *storage;
-		public:
-			bool load(); // prepare a log
-			bool write(const char* message, int cashvalue, int height, int width); // log a message
-	};
+bool snake::Screen::load()
+{
+	initscr();
+
+    if (!has_colors()) {
+        endwin();
+        printf("Your terminal does not support color.\n");
+        return false;
+    }
+
+	start_color();
+	init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
+	init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
+	init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
+	init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK);
+	init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
+	return true;
 }
 
-#endif // end of include guard
+bool snake::Screen::print(char character, int column, int row, int color)
+{
+	attron(COLOR_PAIR(color));
+	mvaddch(row, column, character);
+	attroff(COLOR_PAIR(color));
+	return true;
+}
+
+bool snake::Screen::print(const char * text, int column, int row, int color)
+{
+	attron(COLOR_PAIR(color));
+	mvaddstr(row, column, text);
+	attroff(COLOR_PAIR(color));
+	return true;
+}

@@ -26,20 +26,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef LOG_H
-#define LOG_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
-#include <string>
-#include <stdio.h>
 
 namespace snake {
-	class Log
+	class Screen // any layout, canvas, window, screen etc. to display stuff
 	{
-		private:
-			FILE *storage;
 		public:
-			bool load(); // prepare a log
-			bool write(const char* message, int cashvalue, int height, int width); // log a message
+			bool load();
+			bool print( // render single character
+				char, // letter to display
+				int, // column
+				int, // row
+				int // color
+			);
+			bool print( // render some text
+				const char *, // the text
+				int, // horizontal offset
+				int, // vertical offset
+				int // color
+			);
 	};
 }
 
