@@ -59,3 +59,17 @@ bool snake::Log::write(const char *message, int cashvalue, int height, int width
 
 	return false;
 }
+
+bool snake::Log::write(const char *message)
+{
+	time_t  t;
+
+	if (storage != NULL) {
+		time(&t);
+		fprintf(storage, "%s %s %s", getlogin(), message, ctime(&t));
+		fflush(storage);
+		return true;
+	}
+
+	return false;
+}

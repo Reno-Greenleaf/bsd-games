@@ -39,7 +39,15 @@ namespace snake {
 			FILE *storage;
 		public:
 			bool load(); // prepare a log
-			bool write(const char* message, int cashvalue, int height, int width); // log a message
+			bool write( // log a message
+				const char*, // the message
+				int, // score (cash value)
+				int, // screen height
+				int // screen width
+			);
+			bool write( // log a plain message
+				const char* // the message
+			);
 	};
 }
 

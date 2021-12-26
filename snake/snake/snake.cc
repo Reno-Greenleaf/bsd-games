@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 	snake::log.load();
 
 	if (!snake::screen.load()) {
-		snake::log.write("error: the screen wasn't prepared.", 0, 0, 0);
+		snake::log.write("error: the screen wasn't prepared.");
 		exit(1);
 	}
 	/* Open score files then revoke setgid privileges */
