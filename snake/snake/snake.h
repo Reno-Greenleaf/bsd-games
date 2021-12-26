@@ -26,6 +26,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef SNAKE_H
+#define SNAKE_H
+
 void		chase(struct point *, struct point *);
 int 		chk(const struct point *);
 void		drawbox(void);
@@ -45,3 +48,5 @@ void		surround(struct point *); // animation of snake catching you
 void		suspend(void); // pause, put the game to background/sleep mode
 void		win(const struct point *); // animation of victory/escape
 void		winnings(int); // update score (money collected)
+
+#endif

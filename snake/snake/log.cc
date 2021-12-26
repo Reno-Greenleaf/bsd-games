@@ -32,9 +32,8 @@
 #include <unistd.h>
 #include <err.h>
 
-using namespace snake;
 
-bool Log::load()
+bool snake::Log::load()
 {
 	storage = fopen(_PATH_LOGFILE, "a");
 
@@ -47,7 +46,7 @@ bool Log::load()
 	return true;
 }
 
-bool Log::write(const char *message, int cashvalue, int height, int width)
+bool snake::Log::write(const char *message, int cashvalue, int height, int width)
 {
 	time_t  t;
 
