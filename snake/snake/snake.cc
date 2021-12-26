@@ -129,10 +129,6 @@ int main(int argc, char **argv)
 
 	snake::log.load();
 
-	if (!snake::screen.load()) {
-		snake::log.write("error: the screen wasn't prepared.");
-		exit(1);
-	}
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
 
@@ -175,6 +171,12 @@ int main(int argc, char **argv)
 	srandom((int) tv);
 
 	penalty = loot = 0;
+
+	if (!snake::screen.load()) {
+		snake::log.write("error: the screen wasn't prepared.");
+		exit(1);
+	}
+
 	cbreak();
 	noecho();
 #ifdef KEY_LEFT
