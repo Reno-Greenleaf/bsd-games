@@ -37,6 +37,7 @@ namespace snake {
 	{
 		private:
 			FILE *storage;
+
 		public:
 			bool load(); // prepare a log
 			bool write( // log a message

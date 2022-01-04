@@ -60,7 +60,7 @@ bool snake::Screen::print(char character, int column, int row, int color)
 	return true;
 }
 
-bool snake::Screen::print(const char * text, int column, int row, int color)
+bool snake::Screen::print(const char* text, int column, int row, int color)
 {
 	int pair = color;
 	attron(COLOR_PAIR(pair));

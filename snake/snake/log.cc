@@ -31,11 +31,15 @@
 #include <ctime>
 #include <unistd.h>
 #include <err.h>
-
+#include <filesystem>
 
 bool snake::Log::load()
 {
-	storage = fopen(_PATH_LOGFILE, "a");
+	std::filesystem::path path (std::getenv("HOME"));
+	path.append(".bsd-games/snake");
+	create_directories(path);
+	path.append("log.txt");
+	storage = fopen(path.c_str(), "a");
 
 	if (storage == NULL) {
 		warn("fopen %s", _PATH_LOGFILE);
@@ -46,7 +50,7 @@ bool snake::Log::load()
 	return true;
 }
 
-bool snake::Log::write(const char *message, int cashvalue, int height, int width)
+bool snake::Log::write(const char* message, int cashvalue, int height, int width)
 {
 	time_t  t;
 
@@ -60,7 +64,7 @@ bool snake::Log::write(const char *message, int cashvalue, int height, int width
 	return false;
 }
 
-bool snake::Log::write(const char *message)
+bool snake::Log::write(const char* message)
 {
 	time_t  t;
 

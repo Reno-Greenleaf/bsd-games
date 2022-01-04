@@ -113,7 +113,9 @@ which appears after the game is worth a bonus.
 To see who wastes time playing snake, run
 .Nm snscore .
 .Sh FILES
-.Bl -tag -width @snake_rawscorefile@ -compact
+.Bl -tag -width ~/.bsd-games/snake/log.txt -compact
+.It Pa ~/.bsd-games/snake/log.txt
+log when playing without installation
 .It Pa @snake_rawscorefile@
 database of personal bests
 .It Pa @snake_scorefile@
