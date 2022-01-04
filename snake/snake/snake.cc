@@ -338,11 +338,11 @@ void mainloop()
 			case '\b':
 				if (you.col > 0) {
 					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
+						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
 					you.col--;
 					if ((fast) || (k == repeat) ||
 					    (you.col == 0))
-						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
+						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 				}
 				break;
 			case 'f':
@@ -353,11 +353,11 @@ void mainloop()
 			case ' ':
 				if (you.col < ccnt - 1) {
 					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
+						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
 					you.col++;
 					if ((fast) || (k == repeat) ||
 					    (you.col == ccnt - 1))
-						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
+						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 				}
 				break;
 			case CTRL('p'):
@@ -369,11 +369,11 @@ void mainloop()
 			case 'i':
 				if (you.line > 0) {
 					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
+						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
 					you.line--;
 					if ((fast) || (k == repeat) ||
 					    (you.line == 0))
-						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
+						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 				}
 				break;
 			case CTRL('n'):
@@ -386,11 +386,11 @@ void mainloop()
 			case 'm':
 				if (you.line + 1 < lcnt) {
 					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
+						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
 					you.line++;
 					if ((fast) || (k == repeat) ||
 					    (you.line == lcnt - 1))
-						snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
+						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 				}
 				break;
 			}
@@ -399,7 +399,7 @@ void mainloop()
 				loot += 25;
 
 				if (k < repeat)
-					snake::screen.print(' ', you.col+1, you.line+1, COLOR_BLACK);
+					snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
 				do {
 					snrand(&money);
 				} while ((money.col == finish.col &&
@@ -408,7 +408,7 @@ void mainloop()
 				    (money.col == you.col &&
 					money.line == you.line));
 
-				snake::screen.print(TREASURE, money.col+1, money.line+1, COLOR_YELLOW);
+				snake::screen.print(TREASURE, money.col+1, money.line+1, snake::YELLOW);
 				winnings(cashvalue);
 				continue;
 			}
@@ -437,15 +437,15 @@ void setup()
 	int     i;
 
 	erase();
-	snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
-	snake::screen.print(GOAL, finish.col+1, finish.line+1, COLOR_WHITE);
-	snake::screen.print(TREASURE, money.col+1, money.line+1, COLOR_YELLOW);
+	snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
+	snake::screen.print(GOAL, finish.col+1, finish.line+1, snake::WHITE);
+	snake::screen.print(TREASURE, money.col+1, money.line+1, snake::YELLOW);
 
 	for (i = 1; i < 6; i++) {
-		snake::screen.print(SNAKETAIL, snake::snake[i].col+1, snake::snake[i].line+1, COLOR_WHITE);
+		snake::screen.print(SNAKETAIL, snake::snake[i].col+1, snake::snake[i].line+1, snake::WHITE);
 	}
 
-	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, COLOR_WHITE);
+	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, snake::WHITE);
 
 	drawbox();
 	refresh();
@@ -456,12 +456,12 @@ void drawbox()
 	int i;
 
 	for (i = 1; i <= ccnt; i++) {
-		snake::screen.print('-', i, 0, COLOR_WHITE);
-		snake::screen.print('-', i, lcnt+1, COLOR_WHITE);
+		snake::screen.fill(i, 0, snake::WHITE);
+		snake::screen.fill(i, lcnt+1, snake::WHITE);
 	}
 	for (i = 0; i <= lcnt + 1; i++) {
-		snake::screen.print('|', 0, i, COLOR_WHITE);
-		snake::screen.print('|', ccnt+1, i, COLOR_WHITE);
+		snake::screen.fill(0, i, snake::WHITE);
+		snake::screen.fill(ccnt+1, i, snake::WHITE);
 	}
 }
 
@@ -662,7 +662,7 @@ void spacewarp(int w)
 		erase();
 		refresh();
 		delay(5);
-		snake::screen.print(str, p.col+1, p.line+1, COLOR_RED);
+		snake::screen.print(str, p.col+1, p.line+1, snake::WHITE);
 		refresh();
 		delay(10);
 	}
@@ -691,10 +691,10 @@ void snap()
 #endif
 	if (!stretch(&money))
 		if (!stretch(&finish)) {
-			snake::screen.print('?', you.col+1, you.line+1, COLOR_WHITE);
+			snake::screen.print('?', you.col+1, you.line+1, snake::WHITE);
 			refresh();
 			delay(10);
-			snake::screen.print(ME, you.col+1, you.line+1, COLOR_WHITE);
+			snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 		}
 #if 0
 	if (you.line < 3) {
@@ -726,7 +726,7 @@ int stretch(const struct point *ps)
 		if (you.line < ps->line) {
 
 			for (p.line = you.line + 1; p.line <= ps->line; p.line++)
-				snake::screen.print('v', p.col+1, p.line+1, COLOR_WHITE);
+				snake::screen.print('v', p.col+1, p.line+1, snake::WHITE);
 
 			refresh();
 			delay(10);
@@ -737,7 +737,7 @@ int stretch(const struct point *ps)
 		} else {
 
 			for (p.line = you.line - 1; p.line >= ps->line; p.line--)
-				snake::screen.print('^', p.col+1, p.line+1, COLOR_WHITE);
+				snake::screen.print('^', p.col+1, p.line+1, snake::WHITE);
 
 			refresh();
 			delay(10);
@@ -755,7 +755,7 @@ int stretch(const struct point *ps)
 			if (you.col < ps->col) {
 
 				for (p.col = you.col + 1; p.col <= ps->col; p.col++)
-					snake::screen.print('>', p.col+1, p.line+1, COLOR_WHITE);
+					snake::screen.print('>', p.col+1, p.line+1, snake::WHITE);
 
 				refresh();
 				delay(10);
@@ -766,7 +766,7 @@ int stretch(const struct point *ps)
 			} else {
 
 				for (p.col = you.col - 1; p.col >= ps->col; p.col--)
-					snake::screen.print('<', p.col+1, p.line+1, COLOR_WHITE);
+					snake::screen.print('<', p.col+1, p.line+1, snake::WHITE);
 
 				refresh();
 				delay(10);
@@ -798,35 +798,35 @@ void surround(struct point *ps)
 	if (ps->col == COLS - 1)
 		ps->col--;
 
-	snake::screen.print("/*\\", ps->col, ps->line, COLOR_WHITE);
-	snake::screen.print("* *", ps->col, ps->line+1, COLOR_WHITE);
-	snake::screen.print("\\*/", ps->col, ps->line+2, COLOR_WHITE);
+	snake::screen.print("/*\\", ps->col, ps->line, snake::WHITE);
+	snake::screen.print("* *", ps->col, ps->line+1, snake::WHITE);
+	snake::screen.print("\\*/", ps->col, ps->line+2, snake::WHITE);
 
 	for (j = 0; j < 20; j++) {
-		snake::screen.print('@', ps->col+1, ps->line+1, COLOR_WHITE);
+		snake::screen.print('@', ps->col+1, ps->line+1, snake::WHITE);
 		refresh();
 		delay(1);
-		snake::screen.print(' ', ps->col+1, ps->line+1, COLOR_BLACK);
+		snake::screen.print(' ', ps->col+1, ps->line+1, snake::BLACK);
 		refresh();
 		delay(1);
 	}
 
 	if (post(cashvalue, 0)) {
-		snake::screen.print("   ", ps->col, ps->line, COLOR_WHITE);
-		snake::screen.print("o.o", ps->col, ps->line+1, COLOR_WHITE);
-		snake::screen.print("\\_/", ps->col, ps->line+2, COLOR_WHITE);
+		snake::screen.print("   ", ps->col, ps->line, snake::WHITE);
+		snake::screen.print("o.o", ps->col, ps->line+1, snake::WHITE);
+		snake::screen.print("\\_/", ps->col, ps->line+2, snake::WHITE);
 		refresh();
 		delay(6);
-		snake::screen.print("   ", ps->col, ps->line, COLOR_WHITE);
-		snake::screen.print("o.-", ps->col, ps->line+1, COLOR_WHITE);
-		snake::screen.print("\\_/", ps->col, ps->line+2, COLOR_WHITE);
+		snake::screen.print("   ", ps->col, ps->line, snake::WHITE);
+		snake::screen.print("o.-", ps->col, ps->line+1, snake::WHITE);
+		snake::screen.print("\\_/", ps->col, ps->line+2, snake::WHITE);
 		refresh();
 		delay(6);
 	}
 
-	snake::screen.print("   ", ps->col, ps->line, COLOR_WHITE);
-	snake::screen.print("o.o", ps->col, ps->line+1, COLOR_WHITE);
-	snake::screen.print("\\_/", ps->col, ps->line+2, COLOR_WHITE);
+	snake::screen.print("   ", ps->col, ps->line, snake::WHITE);
+	snake::screen.print("o.o", ps->col, ps->line+1, snake::WHITE);
+	snake::screen.print("\\_/", ps->col, ps->line+2, snake::WHITE);
 	refresh();
 	delay(6);
 }
@@ -843,24 +843,24 @@ void win(const struct point *ps)
 	for (j = 1; j < boxsize; j++) {
 
 		for (k = 0; k < j; k++) {
-			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
+			snake::screen.print('#', x.col+1, x.line+1, snake::WHITE);
 			x.line--;
 		}
 
 		for (k = 0; k < j; k++) {
-			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
+			snake::screen.print('#', x.col+1, x.line+1, snake::WHITE);
 			x.col++;
 		}
 
 		j++;
 
 		for (k = 0; k < j; k++) {
-			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
+			snake::screen.print('#', x.col+1, x.line+1, snake::WHITE);
 			x.line++;
 		}
 
 		for (k = 0; k < j; k++) {
-			snake::screen.print('#', x.col+1, x.line+1, COLOR_WHITE);
+			snake::screen.print('#', x.col+1, x.line+1, snake::WHITE);
 			x.col--;
 		}
 
@@ -887,7 +887,7 @@ int pushsnake()
 			issame++;
 
 	if (!issame)
-		snake::screen.print(' ', snake::snake[5].col+1, snake::snake[5].line+1, COLOR_WHITE);
+		snake::screen.print(' ', snake::snake[5].col+1, snake::snake[5].line+1, snake::WHITE);
 
 	/* Need the following to catch you if you step on the snake's tail */
 	tmp.col = snake::snake[5].col;
@@ -897,8 +897,8 @@ int pushsnake()
 		snake::snake[i + 1] = snake::snake[i];
 
 	chase(&snake::snake[0], &snake::snake[1]);
-	snake::screen.print(SNAKETAIL, snake::snake[1].col+1, snake::snake[1].line+1, COLOR_WHITE);
-	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, COLOR_WHITE);
+	snake::screen.print(SNAKETAIL, snake::snake[1].col+1, snake::snake[1].line+1, snake::WHITE);
+	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, snake::WHITE);
 
 	for (i = 0; i < 6; i++) {
 
@@ -939,24 +939,24 @@ int chk(const struct point *sp)
 	int j;
 
 	if (same(sp, &money)) {
-		snake::screen.print(TREASURE, sp->col+1, sp->line+1, COLOR_YELLOW);
+		snake::screen.print(TREASURE, sp->col+1, sp->line+1, snake::YELLOW);
 		return (2);
 	}
 
 	if (same(sp, &finish)) {
-		snake::screen.print(GOAL, sp->col+1, sp->line+1, COLOR_WHITE);
+		snake::screen.print(GOAL, sp->col+1, sp->line+1, snake::WHITE);
 		return (3);
 	}
 
 	if (same(sp, &snake::snake[0])) {
-		snake::screen.print(SNAKEHEAD, sp->col+1, sp->line+1, COLOR_WHITE);
+		snake::screen.print(SNAKEHEAD, sp->col+1, sp->line+1, snake::WHITE);
 		return (4);
 	}
 
 	for (j = 1; j < 6; j++) {
 
 		if (same(sp, &snake::snake[j])) {
-			snake::screen.print(SNAKETAIL, sp->col+1, sp->line+1, COLOR_WHITE);
+			snake::screen.print(SNAKETAIL, sp->col+1, sp->line+1, snake::WHITE);
 			return (4);
 		}
 	}
@@ -965,17 +965,17 @@ int chk(const struct point *sp)
 		winnings(cashvalue);
 
 		if ((you.line == 0) && (you.col < 4))
-			snake::screen.print(ME, sp->col+1, sp->line+1, COLOR_WHITE);
+			snake::screen.print(ME, sp->col+1, sp->line+1, snake::WHITE);
 
 		return (5);
 	}
 
 	if (same(sp, &you)) {
-		snake::screen.print(ME, sp->col+1, sp->line+1, COLOR_WHITE);
+		snake::screen.print(ME, sp->col+1, sp->line+1, snake::WHITE);
 		return (1);
 	}
 
-	snake::screen.print(' ', sp->col+1, sp->line+1, COLOR_WHITE);
+	snake::screen.print(' ', sp->col+1, sp->line+1, snake::WHITE);
 	return (0);
 }
 

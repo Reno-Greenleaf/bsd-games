@@ -29,8 +29,20 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <map>
+#include <curses.h>
 
 namespace snake {
+	const int BLACK = COLOR_BLACK;
+	const int RED = COLOR_RED;
+	const int GREEN = COLOR_GREEN;
+	const int YELLOW = COLOR_YELLOW;
+	const int BLUE = COLOR_BLUE;
+	const int MAGENTA = COLOR_MAGENTA;
+	const int CYAN = COLOR_CYAN;
+	const int WHITE = COLOR_WHITE;
+
+
 	class Screen // any layout, canvas, window, screen etc. to display stuff
 	{
 		public:
@@ -45,6 +57,11 @@ namespace snake {
 				const char *, // the text
 				int, // horizontal offset
 				int, // vertical offset
+				int // color
+			);
+			bool fill( // fill a cell with color
+				int, // column
+				int, // row
 				int // color
 			);
 	};

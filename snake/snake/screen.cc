@@ -29,41 +29,51 @@
 #include <curses.h>
 #include "screen.h"
 
-#define YELLOW
-
 bool snake::Screen::load()
 {
 	initscr();
 
-    if (!has_colors()) {
-        endwin();
-        printf("Your terminal does not support color.\n");
-        return false;
-    }
+	if (!has_colors()) {
+		endwin();
+		printf("Your terminal does not support color.\n");
+		return false;
+	}
 
+	int colors[8] = {BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE};
 	start_color();
-	init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
-	init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
-	init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
-	init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK);
-	init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
+
+	for (int color : colors)
+	{
+		init_pair(color, color, COLOR_BLACK);
+		init_pair(color+10, COLOR_BLACK, color); // backgrounds
+	}
+
 	return true;
 }
 
 bool snake::Screen::print(char character, int column, int row, int color)
 {
-	attron(COLOR_PAIR(color));
+	int pair = color;
+	attron(COLOR_PAIR(pair));
 	mvaddch(row, column, character);
-	attroff(COLOR_PAIR(color));
+	attroff(COLOR_PAIR(pair));
 	return true;
 }
 
 bool snake::Screen::print(const char * text, int column, int row, int color)
 {
-	attron(COLOR_PAIR(color));
+	int pair = color;
+	attron(COLOR_PAIR(pair));
 	mvaddstr(row, column, text);
-	attroff(COLOR_PAIR(color));
+	attroff(COLOR_PAIR(pair));
+	return true;
+}
+
+bool snake::Screen::fill(int column, int row, int color)
+{
+	int pair = color + 10;
+	attron(COLOR_PAIR(pair));
+	mvaddch(row, column, ' ');
+	attroff(COLOR_PAIR(pair));
 	return true;
 }
