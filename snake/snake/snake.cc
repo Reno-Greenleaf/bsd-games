@@ -75,6 +75,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "snake.h"
 #include "log.h"
 #include "screen.h"
+#include "room.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
 
@@ -109,6 +110,7 @@ struct point finish;
 namespace snake {
 	Log log;
 	Screen screen;
+	Room room;
 	struct point snake[6];
 }
 
@@ -193,6 +195,8 @@ int main(int argc, char **argv)
 		endwin();
 		errx(1, "screen too small for a fair game.");
 	}
+
+	snake::room.load(ccnt, lcnt);
 
 	/*
 	 * chunk is the amount of money the user gets for each $.
@@ -447,22 +451,8 @@ void setup()
 
 	snake::screen.print(SNAKEHEAD, snake::snake[0].col+1, snake::snake[0].line+1, snake::WHITE);
 
-	drawbox();
+	snake::room.display(snake::screen);
 	refresh();
-}
-
-void drawbox()
-{
-	int i;
-
-	for (i = 1; i <= ccnt; i++) {
-		snake::screen.fill(i, 0, snake::WHITE);
-		snake::screen.fill(i, lcnt+1, snake::WHITE);
-	}
-	for (i = 0; i <= lcnt + 1; i++) {
-		snake::screen.fill(0, i, snake::WHITE);
-		snake::screen.fill(ccnt+1, i, snake::WHITE);
-	}
 }
 
 void snrand(struct point *sp)

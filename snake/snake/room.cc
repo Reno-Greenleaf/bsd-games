@@ -26,26 +26,26 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef SNAKE_H
-#define SNAKE_H
+#include "room.h"
 
-void		chase(struct point *, struct point *);
-int 		chk(const struct point *);
-void		flushi(void);
-void		length(int); // message about how many moves you made
-void		mainloop(void) __attribute__((__noreturn__));
-struct point   *point(struct point *, int, int); // create (fill) a point
-int			post(int, int);
-int			pushsnake(void);
-void		setup(void);
-void		snap(void);
-void		snrand(struct point *); // find free random point
-void		spacewarp(int); // warp to a free random point
-void		stop(int) __attribute__((__noreturn__)); // end the game
-int			stretch(const struct point *);
-void		surround(struct point *); // animation of snake catching you
-void		suspend(void); // pause, put the game to background/sleep mode
-void		win(const struct point *); // animation of victory/escape
-void		winnings(int); // update score (money collected)
+bool snake::Room::load(int width, int height)
+{
+	this->width = width;
+	this->height = height;
+	return true;
+}
 
-#endif
+bool snake::Room::display(Screen screen)
+{
+	int i;
+
+	for (i = 1; i <= width; i++) {
+		screen.fill(i, 0, snake::WHITE);
+		screen.fill(i, height+1, snake::WHITE);
+	}
+	for (i = 0; i <= height + 1; i++) {
+		screen.fill(0, i, snake::WHITE);
+		screen.fill(width+1, i, snake::WHITE);
+	}
+	return false;
+}
