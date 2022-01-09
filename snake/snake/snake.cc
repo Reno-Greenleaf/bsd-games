@@ -340,12 +340,14 @@ void mainloop()
 			case KEY_LEFT:
 #endif
 			case '\b':
-				if (you.col > 0) {
+				if (!snake::room.occupies(you.col-1, you.line)) {
+
 					if ((fast) || (k == 1))
 						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
+
 					you.col--;
-					if ((fast) || (k == repeat) ||
-					    (you.col == 0))
+
+					if ((fast) || (k == repeat) || (you.col == 0))
 						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 				}
 				break;
@@ -355,10 +357,13 @@ void mainloop()
 			case KEY_RIGHT:
 #endif
 			case ' ':
-				if (you.col < ccnt - 1) {
+				if (!snake::room.occupies(you.col+1, you.line)) {
+
 					if ((fast) || (k == 1))
 						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
+
 					you.col++;
+
 					if ((fast) || (k == repeat) ||
 					    (you.col == ccnt - 1))
 						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
@@ -371,10 +376,13 @@ void mainloop()
 			case KEY_UP:
 #endif
 			case 'i':
-				if (you.line > 0) {
+				if (!snake::room.occupies(you.col, you.line-1)) {
+
 					if ((fast) || (k == 1))
 						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
+
 					you.line--;
+
 					if ((fast) || (k == repeat) ||
 					    (you.line == 0))
 						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
@@ -388,10 +396,13 @@ void mainloop()
 #endif
 			case LF:
 			case 'm':
-				if (you.line + 1 < lcnt) {
+				if (!snake::room.occupies(you.col, you.line+1)) {
+
 					if ((fast) || (k == 1))
 						snake::screen.print(' ', you.col+1, you.line+1, snake::BLACK);
+
 					you.line++;
+
 					if ((fast) || (k == repeat) ||
 					    (you.line == lcnt - 1))
 						snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);

@@ -49,3 +49,8 @@ bool snake::Room::display(Screen screen)
 	}
 	return false;
 }
+
+bool snake::Room::occupies(int column, int row)
+{
+	return column == 0 || column == width || row == 0 || row == height;
+}

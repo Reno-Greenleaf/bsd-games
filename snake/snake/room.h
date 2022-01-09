@@ -42,6 +42,10 @@ namespace snake {
 			bool display( // display a room
 				Screen // on a screen
 			);
+			bool occupies( // is there a wall in the given
+				int, // column
+				int // and row
+			);
 
 		private:
 			int width, height;
