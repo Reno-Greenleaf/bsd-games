@@ -76,6 +76,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "log.h"
 #include "screen.h"
 #include "treasure.h"
+#include "finish.h"
 #include "room.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
@@ -104,6 +105,7 @@ namespace snake {
 	Log log;
 	Screen screen;
 	Room room;
+	Finish finish;
 	struct point snake[6];
 }
 
@@ -123,7 +125,6 @@ int main(int argc, char **argv)
 	time_t tv;
 
 	snake::log.load();
-
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
 
@@ -221,6 +222,7 @@ int main(int argc, char **argv)
 	snrand(&you);
 	snrand(&money);
 	snake::treasure = snake::Treasure(money.col, money.line);
+	snake::finish = snake::Finish(finish.col, finish.line);
 
 	snrand(&snake::snake[0]);
 
@@ -450,7 +452,7 @@ void setup()
 
 	erase();
 	snake::screen.print(ME, you.col, you.line, snake::WHITE);
-	snake::screen.print(GOAL, finish.col, finish.line, snake::WHITE);
+	snake::finish.display(snake::screen);
 	snake::treasure.display(snake::screen);
 
 	for (i = 1; i < 6; i++) {
@@ -945,7 +947,7 @@ int chk(const struct point *sp)
 	}
 
 	if (same(sp, &finish)) {
-		snake::screen.print(GOAL, sp->col, sp->line, snake::WHITE);
+		snake::finish.display(snake::screen);
 		return (3);
 	}
 

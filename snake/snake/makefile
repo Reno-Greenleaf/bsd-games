@@ -1,7 +1,7 @@
-snake : snake.o log.o screen.o treasure.o room.o
-	g++ -o snake snake.o log.o screen.o treasure.o room.o -lncurses
+snake : snake.o log.o screen.o treasure.o room.o finish.o
+	g++ -o snake snake.o log.o screen.o treasure.o room.o finish.o -lncurses
 
-snake.o : snake.cc pathnames.h snake.h log.h screen.h treasure.h room.h
+snake.o : snake.cc pathnames.h snake.h log.h screen.h treasure.h room.h finish.h
 	g++ -I ../../include -c snake.cc
 
 log.o : log.cc log.h
@@ -15,6 +15,9 @@ treasure.o : treasure.cc treasure.h
 
 room.o : room.cc room.h
 	g++ -c room.cc
+
+finish.o : finish.cc finish.h
+	g++ -c finish.cc
 
 clean :
 	rm -f snake *.o scores.txt
