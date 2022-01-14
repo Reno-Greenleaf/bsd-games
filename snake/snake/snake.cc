@@ -93,10 +93,6 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #define TREASURE	'$'
 #define GOAL		'#'
 
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-
 #define delay(t)	usleep(t * 50000);
 
 struct point you;
@@ -186,7 +182,7 @@ int main(int argc, char **argv)
 	if (!ccnt || ccnt > COLS - 2)
 		ccnt = COLS - 2;
 
-	i = MIN(lcnt, ccnt);
+	i = fmin(lcnt, ccnt);
 
 	if (i < 4) {
 		endwin();
@@ -944,7 +940,7 @@ int chk(const struct point *sp)
 	int j;
 
 	if (same(sp, &money)) {
-		snake::screen.print(TREASURE, sp->col, sp->line, snake::YELLOW);
+		snake::treasure.display(snake::screen);
 		return (2);
 	}
 

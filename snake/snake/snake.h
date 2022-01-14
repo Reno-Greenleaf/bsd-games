@@ -34,7 +34,7 @@ struct point {
 };
 
 void		chase(struct point *, struct point *);
-int 		chk(const struct point *);
+int 		chk(const struct point *); // redraw the given point
 void		flushi(void);
 void		length(int); // message about how many moves you made
 void		mainloop(void) __attribute__((__noreturn__));

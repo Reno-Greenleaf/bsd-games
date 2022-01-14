@@ -37,8 +37,8 @@ namespace snake {
 	{
 		public:
 			Treasure( // new treasure in the given
-				int, // row
-				int // and column
+				int, // column
+				int // and row
 			);
 			Treasure(); // new treasure
 			bool display( // show the treasure
