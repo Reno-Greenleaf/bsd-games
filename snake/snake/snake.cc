@@ -75,13 +75,9 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "snake.h"
 #include "log.h"
 #include "screen.h"
+#include "treasure.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
-
-struct point {
-	int col, line;
-};
-
 #define	same(s1, s2)	((s1)->line == (s2)->line && (s1)->col == (s2)->col)
 
 #define PENALTY  10		/* % penalty for invoking spacewarp	 */
@@ -107,6 +103,7 @@ struct point money;
 struct point finish;
 
 namespace snake {
+	Treasure treasure;
 	Log log;
 	Screen screen;
 	struct point snake[6];
@@ -223,6 +220,8 @@ int main(int argc, char **argv)
 	snrand(&finish);
 	snrand(&you);
 	snrand(&money);
+	snake::treasure = snake::Treasure(money.col+1, money.line+1);
+
 	snrand(&snake::snake[0]);
 
 	for (i = 1; i < 6; i++)
@@ -408,7 +407,8 @@ void mainloop()
 				    (money.col == you.col &&
 					money.line == you.line));
 
-				snake::screen.print(TREASURE, money.col+1, money.line+1, snake::YELLOW);
+				snake::treasure = snake::Treasure(money.col+1, money.line+1);
+				snake::treasure.display(snake::screen);
 				winnings(cashvalue);
 				continue;
 			}
@@ -439,7 +439,8 @@ void setup()
 	erase();
 	snake::screen.print(ME, you.col+1, you.line+1, snake::WHITE);
 	snake::screen.print(GOAL, finish.col+1, finish.line+1, snake::WHITE);
-	snake::screen.print(TREASURE, money.col+1, money.line+1, snake::YELLOW);
+	// snake::screen.print(TREASURE, money.col+1, money.line+1, snake::YELLOW);
+	snake::treasure.display(snake::screen);
 
 	for (i = 1; i < 6; i++) {
 		snake::screen.print(SNAKETAIL, snake::snake[i].col+1, snake::snake[i].line+1, snake::WHITE);
