@@ -41,11 +41,11 @@ bool snake::Room::display(Screen screen)
 
 	for (i = 1; i <= width; i++) {
 		screen.fill(i, 0, snake::WHITE);
-		screen.fill(i, height+1, snake::WHITE);
+		screen.fill(i, height, snake::WHITE);
 	}
-	for (i = 0; i <= height + 1; i++) {
+	for (i = 0; i <= height; i++) {
 		screen.fill(0, i, snake::WHITE);
-		screen.fill(width+1, i, snake::WHITE);
+		screen.fill(width, i, snake::WHITE);
 	}
 	return false;
 }
