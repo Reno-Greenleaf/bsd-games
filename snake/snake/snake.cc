@@ -77,6 +77,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "screen.h"
 #include "treasure.h"
 #include "room.h"
+#include "me.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
 #define	same(s1, s2)	((s1)->line == (s2)->line && (s1)->col == (s2)->col)
@@ -104,6 +105,7 @@ namespace snake {
 	Log log;
 	Screen screen;
 	Room room;
+	Me you;
 	struct point snake[6];
 }
 
@@ -219,6 +221,7 @@ int main(int argc, char **argv)
 
 	snrand(&finish);
 	snrand(&you);
+	snake::you.warp(you.col, you.line);
 	snrand(&money);
 	snake::treasure = snake::Treasure(money.col, money.line);
 
@@ -341,9 +344,10 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.col--;
+					snake::you.warp(you.col, you.line);
 
 					if ((fast) || (k == repeat) || (you.col == 0))
-						snake::screen.print(ME, you.col, you.line, snake::WHITE);
+						snake::you.display(snake::screen);
 				}
 				break;
 			case 'f':
@@ -358,10 +362,10 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.col++;
+					snake::you.warp(you.col, you.line);
 
-					if ((fast) || (k == repeat) ||
-					    (you.col == ccnt - 1))
-						snake::screen.print(ME, you.col, you.line, snake::WHITE);
+					if ((fast) || (k == repeat) || (you.col == ccnt - 1))
+						snake::you.display(snake::screen);
 				}
 				break;
 			case CTRL('p'):
@@ -377,10 +381,10 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.line--;
+					snake::you.warp(you.col, you.line);
 
-					if ((fast) || (k == repeat) ||
-					    (you.line == 0))
-						snake::screen.print(ME, you.col, you.line, snake::WHITE);
+					if ((fast) || (k == repeat) || (you.line == 0))
+						snake::you.display(snake::screen);
 				}
 				break;
 			case CTRL('n'):
@@ -397,10 +401,10 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.line++;
+					snake::you.warp(you.col, you.line);
 
-					if ((fast) || (k == repeat) ||
-					    (you.line == lcnt - 1))
-						snake::screen.print(ME, you.col, you.line, snake::WHITE);
+					if ((fast) || (k == repeat) || (you.line == lcnt - 1))
+						snake::you.display(snake::screen);
 				}
 				break;
 			}
@@ -449,7 +453,7 @@ void setup()
 	int     i;
 
 	erase();
-	snake::screen.print(ME, you.col, you.line, snake::WHITE);
+	snake::you.display(snake::screen);
 	snake::screen.print(GOAL, finish.col, finish.line, snake::WHITE);
 	snake::treasure.display(snake::screen);
 
@@ -643,6 +647,7 @@ void spacewarp(int w)
 	const char   *str;
 
 	snrand(&you);
+	snake::you.warp(you.col, you.line);
 	point(&p, COLS / 2 - 8, LINES / 2 - 1);
 
 	if (p.col < 0)
@@ -696,7 +701,7 @@ void snap()
 			snake::screen.print('?', you.col, you.line, snake::WHITE);
 			refresh();
 			delay(10);
-			snake::screen.print(ME, you.col, you.line, snake::WHITE);
+			snake::you.display(snake::screen);
 		}
 #if 0
 	if (you.line < 3) {
@@ -966,13 +971,13 @@ int chk(const struct point *sp)
 		winnings(cashvalue);
 
 		if ((you.line == 0) && (you.col < 4))
-			snake::screen.print(ME, sp->col, sp->line, snake::WHITE);
+			snake::you.display(snake::screen);
 
 		return (5);
 	}
 
 	if (same(sp, &you)) {
-		snake::screen.print(ME, sp->col, sp->line, snake::WHITE);
+		snake::you.display(snake::screen);
 		return (1);
 	}
 
