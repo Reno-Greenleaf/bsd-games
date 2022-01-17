@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 1980, 1993
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+#include "monster.h"
+
+bool snake::Monster::warp(struct point* positions)
+{
+	sections = positions;
+	return true;
+}
+
+bool snake::Monster::display(Screen screen)
+{
+	screen.print('s', sections[1].col, sections[1].line, WHITE);
+	screen.print('s', sections[2].col, sections[2].line, WHITE);
+	screen.print('s', sections[3].col, sections[3].line, WHITE);
+	screen.print('s', sections[4].col, sections[4].line, WHITE);
+	screen.print('s', sections[5].col, sections[5].line, WHITE);
+	screen.print('S', sections[0].col, sections[0].line, WHITE);
+	return true;
+}
+
+bool snake::Monster::occupies(int column, int row)
+{
+	if (!sections)
+		return false;
+
+	for (int i = 0; i < 6; i++) {
+		if (sections[i].col == column && sections[i].line == row)
+			return true;
+	}
+
+	return false;
+}
