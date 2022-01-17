@@ -79,6 +79,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "finish.h"
 #include "room.h"
 #include "me.h"
+#include "monster.h"
 
 #define cashvalue	chunk*(loot-penalty)/25
 #define	same(s1, s2)	((s1)->line == (s2)->line && (s1)->col == (s2)->col)
@@ -108,6 +109,7 @@ namespace snake {
 	Room room;
 	Finish finish;
 	Me you;
+	Monster monster;
 	struct point snake[6];
 }
 
@@ -231,6 +233,8 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < 6; i++)
 		chase(&snake::snake[i], &snake::snake[i - 1]);
+
+	snake::monster.warp(snake::snake);
 
 	setup();
 	mainloop();
@@ -452,19 +456,13 @@ void mainloop()
  */
 void setup()
 {
-	int     i;
+	int i;
 
 	erase();
 	snake::you.display(snake::screen);
 	snake::finish.display(snake::screen);
 	snake::treasure.display(snake::screen);
-
-	for (i = 1; i < 6; i++) {
-		snake::screen.print(SNAKETAIL, snake::snake[i].col, snake::snake[i].line, snake::WHITE);
-	}
-
-	snake::screen.print(SNAKEHEAD, snake::snake[0].col, snake::snake[0].line, snake::WHITE);
-
+	snake::monster.display(snake::screen);
 	snake::room.display(snake::screen);
 	refresh();
 }
@@ -472,7 +470,6 @@ void setup()
 void snrand(struct point *sp)
 {
 	struct point p;
-	int i;
 
 	for (;;) {
 		p.col = random() % ccnt;
@@ -481,21 +478,25 @@ void snrand(struct point *sp)
 		/* make sure it's not on top of something else */
 		if (snake::room.occupies(p.col, p.line))
 			continue;
+
 		if (p.line == 0 && p.col < 5)
 			continue;
+
 		if (same(&p, &you))
 			continue;
+
 		if (same(&p, &money))
 			continue;
+
 		if (same(&p, &finish))
 			continue;
-		for (i = 0; i < 6; i++)
-			if (same(&p, &snake::snake[i]))
-				break;
-		if (i < 6)
+
+		if (snake::monster.occupies(p.col, p.line))
 			continue;
+
 		break;
 	}
+
 	*sp = p;
 }
 
@@ -905,8 +906,8 @@ int pushsnake()
 		snake::snake[i + 1] = snake::snake[i];
 
 	chase(&snake::snake[0], &snake::snake[1]);
-	snake::screen.print(SNAKETAIL, snake::snake[1].col, snake::snake[1].line, snake::WHITE);
-	snake::screen.print(SNAKEHEAD, snake::snake[0].col, snake::snake[0].line, snake::WHITE);
+	snake::monster.warp(snake::snake);
+	snake::monster.display(snake::screen);
 
 	for (i = 0; i < 6; i++) {
 
@@ -956,17 +957,10 @@ int chk(const struct point *sp)
 		return (3);
 	}
 
-	if (same(sp, &snake::snake[0])) {
-		snake::screen.print(SNAKEHEAD, sp->col, sp->line, snake::WHITE);
+
+	if (snake::monster.occupies(sp->col, sp->line)) {
+		snake::monster.display(snake::screen);
 		return (4);
-	}
-
-	for (j = 1; j < 6; j++) {
-
-		if (same(sp, &snake::snake[j])) {
-			snake::screen.print(SNAKETAIL, sp->col, sp->line, snake::WHITE);
-			return (4);
-		}
 	}
 
 	if ((sp->col < 4) && (sp->line == 0)) {
