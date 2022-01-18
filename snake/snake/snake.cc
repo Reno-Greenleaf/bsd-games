@@ -90,12 +90,6 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #define LF	'\n'
 #define DEL	'\177'
 
-#define ME			'I'
-#define SNAKEHEAD	'S'
-#define SNAKETAIL	's'
-#define TREASURE	'$'
-#define GOAL		'#'
-
 #define delay(t)	usleep(t * 50000);
 
 struct point you;
