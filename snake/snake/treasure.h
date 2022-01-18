@@ -31,9 +31,10 @@
 
 #include "screen.h"
 #include "snake.h"
+#include "interfaces.h"
 
 namespace snake {
-	class Treasure
+	class Treasure : public IBody
 	{
 		public:
 			Treasure( // new treasure in the given
@@ -48,6 +49,7 @@ namespace snake {
 				int, // column
 				int // and row
 			);
+			bool intersects(IBody*);
 
 		private:
 			int column, row;

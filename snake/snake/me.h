@@ -30,9 +30,10 @@
 #define ME_H
 
 #include "screen.h"
+#include "interfaces.h"
 
 namespace snake {
-	class Me // main character representing a player
+	class Me : public IBody // main character representing a player
 	{
 		public:
 			bool warp( // move the character to the given
@@ -46,6 +47,7 @@ namespace snake {
 				int, // column
 				int // and row
 			);
+			bool intersects(IBody*);
 
 		private:
 			int column, row;

@@ -26,31 +26,18 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef ROOM_H
-#define ROOM_H
+#ifndef INTERFACES_H
+#define INTERFACES_H
 
 #include "screen.h"
-#include "interfaces.h"
 
 namespace snake {
-	class Room : public IBody
+	class IBody
 	{
 		public:
-			bool load( // simple rectangular room with the given
-				int, // width
-				int // and height
-			);
-			bool display( // display a room
-				Screen // on a screen
-			);
-			bool occupies( // is there a wall in the given
-				int, // column
-				int // and row
-			);
-			bool intersects(IBody*);
-
-		private:
-			int width, height;
+			virtual bool occupies(int, int) = 0;
+			virtual bool display(Screen) = 0;
+			virtual bool intersects(IBody*) = 0;
 	};
 }
 

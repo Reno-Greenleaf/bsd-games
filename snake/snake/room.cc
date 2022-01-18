@@ -54,3 +54,8 @@ bool snake::Room::occupies(int column, int row)
 {
 	return column == 0 || column == width || row == 0 || row == height;
 }
+
+bool snake::Room::intersects(IBody* body)
+{
+	return false;
+}
