@@ -57,3 +57,16 @@ bool snake::Monster::occupies(int column, int row)
 
 	return false;
 }
+
+bool snake::Monster::intersects(IBody* body)
+{
+	if (!sections)
+		return false;
+
+	for (int i = 0; i < 6; i++) {
+		if (body->occupies(sections[i].col, sections[i].line))
+			return true;
+	}
+
+	return false;
+}

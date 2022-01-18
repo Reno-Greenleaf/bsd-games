@@ -31,9 +31,10 @@
 
 #include "screen.h"
 #include "snake.h"
+#include "interfaces.h"
 
 namespace snake {
-	class Monster
+	class Monster : public IBody
 	{
 		public:
 			bool warp( // move the monster
@@ -46,6 +47,7 @@ namespace snake {
 				int, // column
 				int // and row
 			);
+			bool intersects(IBody*);
 
 		private:
 			struct point* sections;

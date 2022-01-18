@@ -30,9 +30,10 @@
 #define FINISH_H
 
 #include "screen.h"
+#include "interfaces.h"
 
 namespace snake {
-	class Finish
+	class Finish : public IBody
 	{
 		public:
 			Finish( // new exit in the given
@@ -47,6 +48,7 @@ namespace snake {
 				int, // column
 				int // and row
 			);
+			bool intersects(IBody*);
 
 		private:
 			int column, row;

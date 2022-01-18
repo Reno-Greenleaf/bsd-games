@@ -45,3 +45,8 @@ bool snake::Me::occupies(int column, int row)
 {
 	return column == this->column && row == this->row;
 }
+
+bool snake::Me::intersects(IBody* body)
+{
+	return body->occupies(column, row);
+}

@@ -81,8 +81,8 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "me.h"
 #include "monster.h"
 
-#define cashvalue	chunk*(loot-penalty)/25
-#define	same(s1, s2)	((s1)->line == (s2)->line && (s1)->col == (s2)->col)
+#define cashvalue chunk*(loot-penalty)/25
+#define	same(s1, s2) ((s1)->line == (s2)->line && (s1)->col == (s2)->col)
 
 #define PENALTY  10		/* % penalty for invoking spacewarp	 */
 
@@ -409,7 +409,7 @@ void mainloop()
 				break;
 			}
 
-			if (same(&you, &money)) {
+			if (snake::you.intersects(&snake::treasure)) {
 				loot += 25;
 
 				if (k < repeat)
@@ -428,7 +428,7 @@ void mainloop()
 				continue;
 			}
 
-			if (same(&you, &finish)) {
+			if (snake::you.intersects(&snake::finish)) {
 				win(&finish);
 				flushi();
 				endwin();
