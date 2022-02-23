@@ -48,6 +48,7 @@ namespace snake {
 				int // and row
 			);
 			bool intersects(IBody*);
+            struct point warp(int horizontal, int vertical);
 
 		private:
 			struct point* sections;

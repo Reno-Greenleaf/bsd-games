@@ -59,3 +59,9 @@ bool snake::Room::intersects(IBody* body)
 {
 	return false;
 }
+
+struct point snake::Room::warp(int horizontal, int vertical)
+{
+    struct point place;
+    return place;
+}

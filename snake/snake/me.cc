@@ -26,18 +26,22 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <stdlib.h>
 #include "me.h"
 
-bool snake::Me::warp(int column, int row)
+
+struct point snake::Me::warp(int horizontal, int vertical)
 {
-	this->column = column;
-	this->row = row;
-	return true;
+    struct point place;
+    place.col = column = random() % horizontal;
+    place.line = row = random() % vertical;
+	return place;
 }
 
 bool snake::Me::display(Screen screen)
 {
 	screen.print('I', column, row, WHITE);
+    screen.select(column, row);
 	return true;
 }
 
@@ -49,4 +53,11 @@ bool snake::Me::occupies(int column, int row)
 bool snake::Me::intersects(IBody* body)
 {
 	return body->occupies(column, row);
+}
+
+bool snake::Me::warp(struct point position)
+{
+    column = position.col;
+    row = position.line;
+    return true;
 }

@@ -48,6 +48,7 @@ namespace snake {
 				int // and row
 			);
 			bool intersects(IBody*);
+            struct point warp(int horizontal, int vertical); // makes sense only on creation, but who knows...
 
 		private:
 			int width, height;

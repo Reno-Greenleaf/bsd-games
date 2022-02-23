@@ -51,3 +51,9 @@ bool snake::Finish::intersects(IBody* body)
 {
 	return body->occupies(column, row);
 }
+
+struct point snake::Finish::warp(int horizontal, int vertical)
+{
+    struct point place;
+    return place;
+}

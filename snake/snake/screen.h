@@ -64,6 +64,10 @@ namespace snake {
 				int, // row
 				int // color
 			);
+			bool select( // focus on position in the given
+				int, // column and
+				int // row
+			);
 	};
 }
 

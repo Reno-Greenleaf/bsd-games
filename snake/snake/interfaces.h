@@ -30,6 +30,7 @@
 #define INTERFACES_H
 
 #include "screen.h"
+#include "snake.h"
 
 namespace snake {
 	class IBody
@@ -38,6 +39,10 @@ namespace snake {
 			virtual bool occupies(int, int) = 0;
 			virtual bool display(Screen) = 0;
 			virtual bool intersects(IBody*) = 0;
+            virtual struct point warp( // warp the body to a random place within given
+                int, // horizontal
+                int // and vertical limits
+            ) = 0;
 	};
 }
 

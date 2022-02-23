@@ -31,15 +31,14 @@
 
 #include "screen.h"
 #include "interfaces.h"
+#include "snake.h"
 
 namespace snake {
 	class Me : public IBody // main character representing a player
 	{
 		public:
-			bool warp( // move the character to the given
-				int, // column and
-				int // row
-			);
+			struct point warp(int, int);
+            bool warp(struct point);
 			bool display( // display the character
 				Screen // on a screen
 			);

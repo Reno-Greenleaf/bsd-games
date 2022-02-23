@@ -67,7 +67,6 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <termios.h>
 
@@ -217,8 +216,7 @@ int main(int argc, char **argv)
 	signal(SIGINT, stop);
 
 	snrand(&finish);
-	snrand(&you);
-	snake::you.warp(you.col, you.line);
+	you = snake::you.warp(ccnt, lcnt);
 	snrand(&money);
 	snake::treasure = snake::Treasure(money.col, money.line);
 	snake::finish = snake::Finish(finish.col, finish.line);
@@ -254,7 +252,7 @@ void mainloop()
 		int     c;
 
 		/* Highlight you, not left & above */
-		move(you.line, you.col);
+		snake::you.display(snake::screen);
 		refresh();
 		if (((c = getch()) <= '9') && (c >= '0')) {
 			repeat = c - '0';
@@ -344,7 +342,7 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.col--;
-					snake::you.warp(you.col, you.line);
+					snake::you.warp(you);
 
 					if ((fast) || (k == repeat) || (you.col == 0))
 						snake::you.display(snake::screen);
@@ -362,7 +360,7 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.col++;
-					snake::you.warp(you.col, you.line);
+					snake::you.warp(you);
 
 					if ((fast) || (k == repeat) || (you.col == ccnt - 1))
 						snake::you.display(snake::screen);
@@ -381,7 +379,7 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.line--;
-					snake::you.warp(you.col, you.line);
+					snake::you.warp(you);
 
 					if ((fast) || (k == repeat) || (you.line == 0))
 						snake::you.display(snake::screen);
@@ -401,7 +399,7 @@ void mainloop()
 						snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 					you.line++;
-					snake::you.warp(you.col, you.line);
+					snake::you.warp(you);
 
 					if ((fast) || (k == repeat) || (you.line == lcnt - 1))
 						snake::you.display(snake::screen);
@@ -453,7 +451,7 @@ void setup()
 	int i;
 
 	erase();
-	snake::you.display(snake::screen);
+	// snake::you.display(snake::screen);
 	snake::finish.display(snake::screen);
 	snake::treasure.display(snake::screen);
 	snake::monster.display(snake::screen);
@@ -644,7 +642,7 @@ void spacewarp(int w)
 	const char   *str;
 
 	snrand(&you);
-	snake::you.warp(you.col, you.line);
+	snake::you.warp(you);
 	point(&p, COLS / 2 - 8, LINES / 2 - 1);
 
 	if (p.col < 0)

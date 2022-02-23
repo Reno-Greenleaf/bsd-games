@@ -70,3 +70,9 @@ bool snake::Monster::intersects(IBody* body)
 
 	return false;
 }
+
+struct point snake::Monster::warp(int horizontal, int vertical)
+{
+	struct point place;
+	return place;
+}

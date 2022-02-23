@@ -77,3 +77,9 @@ bool snake::Screen::fill(int column, int row, int color)
 	attroff(COLOR_PAIR(pair));
 	return true;
 }
+
+bool snake::Screen::select(int column, int row)
+{
+	move(row, column);
+	return true;
+}
