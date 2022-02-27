@@ -29,9 +29,7 @@
 #ifndef TREASURE_H
 #define TREASURE_H
 
-#include "screen.h"
 #include "snake.h"
-#include "interfaces.h"
 
 namespace snake {
 	class Treasure : public IBody

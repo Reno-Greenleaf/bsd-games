@@ -65,3 +65,11 @@ struct point snake::Room::warp(int horizontal, int vertical)
     struct point place;
     return place;
 }
+
+struct point snake::Room::warp(std::vector<snake::IBody*> obstacles)
+{
+    this->width = settings::horizontalLimit;
+    this->height = settings::verticalLimit;
+    struct point place;
+    return place;
+}

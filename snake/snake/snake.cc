@@ -106,21 +106,28 @@ namespace snake {
 	struct point snake[6];
 }
 
-int     loot, penalty;
-int     moves;
-int     fast = 1;
+int loot, penalty;
+int moves;
+int fast = 1;
 
 int rawscores;
 FILE *logfile;
 
 int	lcnt, ccnt;	/* user's idea of screen size */
-int	chunk;		/* amount of money given at a time */
+
+namespace settings {
+	int horizontalLimit;
+	int verticalLimit;
+}
+
+int	chunk; /* amount of money given at a time */
 
 int main(int argc, char **argv)
 {
 	int     ch, i;
 	time_t tv;
 
+	std::vector<snake::IBody*> obstacles {&snake::you, &snake::room, &snake::finish, &snake::monster, &snake::treasure};
 	snake::log.load();
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
@@ -143,10 +150,10 @@ int main(int argc, char **argv)
 			break;
 #endif
 		case 'w':	/* width */
-			ccnt = atoi(optarg);
+			settings::horizontalLimit = ccnt = atoi(optarg);
 			break;
 		case 'l':	/* length */
-			lcnt = atoi(optarg);
+			settings::verticalLimit = lcnt = atoi(optarg);
 			break;
 		case 't':
 			fast = 0;
@@ -176,9 +183,10 @@ int main(int argc, char **argv)
 	keypad(stdscr, TRUE);
 #endif
 	if (!lcnt || lcnt > LINES - 2)
-		lcnt = LINES - 2;
+		settings::verticalLimit = lcnt = LINES - 2;
+
 	if (!ccnt || ccnt > COLS - 2)
-		ccnt = COLS - 2;
+		settings::horizontalLimit = ccnt = COLS - 2;
 
 	i = fmin(lcnt, ccnt);
 
@@ -187,7 +195,7 @@ int main(int argc, char **argv)
 		errx(1, "screen too small for a fair game.");
 	}
 
-	snake::room.load(ccnt, lcnt);
+	snake::room.warp(obstacles);
 
 	/*
 	 * chunk is the amount of money the user gets for each $.
@@ -215,12 +223,11 @@ int main(int argc, char **argv)
 
 	signal(SIGINT, stop);
 
+	you = snake::you.warp(obstacles);
 	snrand(&finish);
-	you = snake::you.warp(ccnt, lcnt);
 	snrand(&money);
 	snake::treasure = snake::Treasure(money.col, money.line);
 	snake::finish = snake::Finish(finish.col, finish.line);
-
 	snrand(&snake::snake[0]);
 
 	for (i = 1; i < 6; i++)
@@ -229,7 +236,7 @@ int main(int argc, char **argv)
 	snake::monster.warp(snake::snake);
 
 	setup();
-	mainloop();
+	mainloop(obstacles);
 	/* NOTREACHED */
 	return (0);
 }
@@ -242,7 +249,7 @@ struct point * point(struct point *ps, int x, int y)
 }
 
 /* Main command loop */
-void mainloop()
+void mainloop(std::vector<snake::IBody*> obstacles)
 {
 	int     k;
 	int     repeat = 1;
@@ -288,7 +295,7 @@ void mainloop()
 			snap();
 			continue;
 		case 'w':
-			spacewarp(0);
+			spacewarp(0, obstacles);
 			continue;
 		case 'A':
 			repeat = you.col;
@@ -437,7 +444,7 @@ void mainloop()
 				length(moves);
 				exit(0);
 			}
-			if (pushsnake())
+			if (pushsnake(obstacles))
 				break;
 		}
 	}
@@ -635,14 +642,13 @@ void chase(struct point *np, struct point *sp)
 	point(np, sp->col + mx[w], sp->line + my[w]);
 }
 
-void spacewarp(int w)
+void spacewarp(int w, std::vector<snake::IBody*> obstacles)
 {
 	struct point p;
-	int     j;
-	const char   *str;
+	int j;
+	const char* str;
 
-	snrand(&you);
-	snake::you.warp(you);
+	you = snake::you.warp(obstacles);
 	point(&p, COLS / 2 - 8, LINES / 2 - 1);
 
 	if (p.col < 0)
@@ -870,7 +876,7 @@ void win(const struct point *ps)
 	}
 }
 
-int pushsnake()
+int pushsnake(std::vector<snake::IBody*> obstacles)
 {
 	int     i, bonus;
 	int     issame = 0;
@@ -912,7 +918,7 @@ int pushsnake()
 			delay(30);
 
 			if (bonus == i) {
-				spacewarp(1);
+				spacewarp(1, obstacles);
 				snake::log.write("bonus", cashvalue, ccnt, lcnt);
 				flushi();
 				return (1);

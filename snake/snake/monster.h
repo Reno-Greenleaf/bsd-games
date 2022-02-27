@@ -29,9 +29,7 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
-#include "screen.h"
 #include "snake.h"
-#include "interfaces.h"
 
 namespace snake {
 	class Monster : public IBody

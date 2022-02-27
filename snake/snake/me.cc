@@ -33,8 +33,8 @@
 struct point snake::Me::warp(int horizontal, int vertical)
 {
     struct point place;
-    place.col = column = random() % horizontal;
-    place.line = row = random() % vertical;
+    place.col = column = random() % settings::horizontalLimit;
+    place.line = row = random() % settings::verticalLimit;
 	return place;
 }
 
@@ -60,4 +60,40 @@ bool snake::Me::warp(struct point position)
     column = position.col;
     row = position.line;
     return true;
+}
+
+struct point snake::Me::warp(std::vector<IBody*> obstacles)
+{
+    struct point place;
+
+    if (obstacles.empty())
+    {
+        column = place.col = random() % settings::horizontalLimit;
+        row = place.line = random() % settings::verticalLimit;
+        return place;
+    }
+
+    bool found = false;
+
+    while (true) {
+        column = random() % settings::horizontalLimit;
+        row = random() % settings::verticalLimit;
+
+        for (IBody* obstacle : obstacles)
+        {
+            if (obstacle->occupies(column, row) && obstacle != this)
+            {
+                break;
+            }
+
+            found = true;
+        }
+
+        if (found)
+        {
+            place.col = column;
+            place.line = row;
+            return place;
+        }
+    }
 }

@@ -29,8 +29,7 @@
 #ifndef FINISH_H
 #define FINISH_H
 
-#include "screen.h"
-#include "interfaces.h"
+#include "snake.h"
 
 namespace snake {
 	class Finish : public IBody

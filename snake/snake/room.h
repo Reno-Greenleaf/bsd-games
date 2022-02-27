@@ -29,8 +29,7 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-#include "screen.h"
-#include "interfaces.h"
+#include "snake.h"
 
 namespace snake {
 	class Room : public IBody
@@ -49,6 +48,7 @@ namespace snake {
 			);
 			bool intersects(IBody*);
             struct point warp(int horizontal, int vertical); // makes sense only on creation, but who knows...
+            struct point warp(std::vector<snake::IBody*>);
 
 		private:
 			int width, height;

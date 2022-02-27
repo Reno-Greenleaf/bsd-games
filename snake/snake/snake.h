@@ -29,27 +29,49 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
+#include "screen.h"
+#include <vector>
+
 struct point {
 	int col, line;
 };
 
-void		chase(struct point *, struct point *);
-int 		chk(const struct point *); // redraw the given point
+namespace settings {
+    extern int horizontalLimit;
+    extern int verticalLimit;
+}
+
+namespace snake {
+    class IBody
+    {
+        public:
+            virtual bool occupies(int, int) = 0;
+            virtual bool display(Screen) = 0;
+            virtual bool intersects(IBody*) = 0;
+            virtual struct point warp( // warp the body to a random place within given
+                int, // horizontal
+                int // and vertical limits
+            ) = 0;
+    };
+}
+
+void mainloop(std::vector<snake::IBody*>);
+void		chase(struct point*, struct point*);
+int 		chk(const struct point*); // redraw the given point
 void		flushi(void);
 void		length(int); // message about how many moves you made
-void		mainloop(void) __attribute__((__noreturn__));
-struct point   *point(struct point *, int, int); // create (fill) a point
+struct point   *point(struct point*, int, int); // create (fill) a point
 int			post(int, int);
-int			pushsnake(void);
+int			pushsnake(std::vector<snake::IBody*>);
 void		setup(void);
 void		snap(void);
-void		snrand(struct point *); // find free random point
-void		spacewarp(int); // warp to a free random point
+void		snrand(struct point*); // find free random point
+void		spacewarp(int, std::vector<snake::IBody*>); // warp to a free random point
 void		stop(int) __attribute__((__noreturn__)); // end the game
-int			stretch(const struct point *);
-void		surround(struct point *); // animation of snake catching you
+int			stretch(const struct point*);
+void		surround(struct point*); // animation of snake catching you
 void		suspend(void); // pause, put the game to background/sleep mode
-void		win(const struct point *); // animation of victory/escape
+void		win(const struct point*); // animation of victory/escape
 void		winnings(int); // update score (money collected)
 
-#endif
+#endif // end of include guard
