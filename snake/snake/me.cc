@@ -65,6 +65,7 @@ bool snake::Me::warp(struct point position)
 struct point snake::Me::warp(std::vector<IBody*> obstacles)
 {
     struct point place;
+    bool found;
 
     if (obstacles.empty())
     {
@@ -73,20 +74,20 @@ struct point snake::Me::warp(std::vector<IBody*> obstacles)
         return place;
     }
 
-    bool found = false;
-
     while (true) {
+        bool found = true;
         column = random() % settings::horizontalLimit;
         row = random() % settings::verticalLimit;
 
         for (IBody* obstacle : obstacles)
         {
-            if (obstacle->occupies(column, row) && obstacle != this)
+            if (obstacle == this)
+                continue;
+            else if (obstacle->occupies(column, row))
             {
+                found = false;
                 break;
             }
-
-            found = true;
         }
 
         if (found)
