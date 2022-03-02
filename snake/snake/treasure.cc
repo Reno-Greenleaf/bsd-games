@@ -26,8 +26,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <stdlib.h>
 #include "treasure.h"
-#include "screen.h"
+
 
 snake::Treasure::Treasure(int column, int row)
 {
@@ -57,4 +58,41 @@ struct point snake::Treasure::warp(int horizontal, int vertical)
 {
     struct point place;
     return place;
+}
+
+struct point snake::Treasure::warp(std::vector<IBody*> obstacles)
+{
+    struct point place;
+    bool found;
+
+    if (obstacles.empty())
+    {
+        column = place.col = random() % settings::horizontalLimit;
+        row = place.line = random() % settings::verticalLimit;
+        return place;
+    }
+
+    while (true) {
+        bool found = true;
+        column = random() % settings::horizontalLimit;
+        row = random() % settings::verticalLimit;
+
+        for (IBody* obstacle : obstacles)
+        {
+            if (obstacle == this)
+                continue;
+            else if (obstacle->occupies(column, row))
+            {
+                found = false;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            place.col = column;
+            place.line = row;
+            return place;
+        }
+    }
 }

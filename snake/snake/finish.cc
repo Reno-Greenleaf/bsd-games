@@ -57,3 +57,40 @@ struct point snake::Finish::warp(int horizontal, int vertical)
     struct point place;
     return place;
 }
+
+struct point snake::Finish::warp(std::vector<IBody*> obstacles)
+{
+    struct point place;
+    bool found;
+
+    if (obstacles.empty())
+    {
+        column = place.col = random() % settings::horizontalLimit;
+        row = place.line = random() % settings::verticalLimit;
+        return place;
+    }
+
+    while (true) {
+        bool found = true;
+        column = random() % settings::horizontalLimit;
+        row = random() % settings::verticalLimit;
+
+        for (IBody* obstacle : obstacles)
+        {
+            if (obstacle == this)
+                continue;
+            else if (obstacle->occupies(column, row))
+            {
+                found = false;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            place.col = column;
+            place.line = row;
+            return place;
+        }
+    }
+}

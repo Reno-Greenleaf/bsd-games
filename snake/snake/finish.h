@@ -29,6 +29,7 @@
 #ifndef FINISH_H
 #define FINISH_H
 
+#include <stdlib.h>
 #include "snake.h"
 
 namespace snake {
@@ -49,6 +50,7 @@ namespace snake {
 			);
 			bool intersects(IBody*);
             struct point warp(int horizontal, int vertical);
+            struct point warp(std::vector<IBody*>);
 
 		private:
 			int column, row;

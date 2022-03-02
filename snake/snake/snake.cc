@@ -96,7 +96,7 @@ struct point money;
 struct point finish;
 
 namespace snake {
-	Treasure treasure;
+	Treasure money;
 	Log log;
 	Screen screen;
 	Room room;
@@ -127,8 +127,9 @@ int main(int argc, char **argv)
 	int     ch, i;
 	time_t tv;
 
-	std::vector<snake::IBody*> obstacles {&snake::you, &snake::room, &snake::finish, &snake::monster, &snake::treasure};
+	std::vector<snake::IBody*> obstacles {&snake::you, &snake::room, &snake::finish, &snake::monster, &snake::money};
 	snake::log.load();
+
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
 
@@ -224,10 +225,8 @@ int main(int argc, char **argv)
 	signal(SIGINT, stop);
 
 	you = snake::you.warp(obstacles);
-	snrand(&finish);
-	snrand(&money);
-	snake::treasure = snake::Treasure(money.col, money.line);
-	snake::finish = snake::Finish(finish.col, finish.line);
+	finish = snake::finish.warp(obstacles);
+	money = snake::money.warp(obstacles);
 	snrand(&snake::snake[0]);
 
 	for (i = 1; i < 6; i++)
@@ -414,21 +413,22 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 				break;
 			}
 
-			if (snake::you.intersects(&snake::treasure)) {
+			if (snake::you.intersects(&snake::money)) {
 				loot += 25;
 
 				if (k < repeat)
 					snake::screen.print(' ', you.col, you.line, snake::BLACK);
+
 				do {
-					snrand(&money);
+					money = snake::money.warp(obstacles);
 				} while ((money.col == finish.col &&
 					money.line == finish.line) ||
 				    (money.col < 5 && money.line == 0) ||
 				    (money.col == you.col &&
 					money.line == you.line));
 
-				snake::treasure = snake::Treasure(money.col, money.line);
-				snake::treasure.display(snake::screen);
+				snake::money = snake::Treasure(money.col, money.line);
+				snake::money.display(snake::screen);
 				winnings(cashvalue);
 				continue;
 			}
@@ -444,6 +444,7 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 				length(moves);
 				exit(0);
 			}
+
 			if (pushsnake(obstacles))
 				break;
 		}
@@ -458,9 +459,8 @@ void setup()
 	int i;
 
 	erase();
-	// snake::you.display(snake::screen);
 	snake::finish.display(snake::screen);
-	snake::treasure.display(snake::screen);
+	snake::money.display(snake::screen);
 	snake::monster.display(snake::screen);
 	snake::room.display(snake::screen);
 	refresh();
@@ -590,18 +590,22 @@ void chase(struct point *np, struct point *sp)
 	v1 = sqrt((double) (d.col * d.col + d.line * d.line));
 	w = 0;
 	max = 0;
+
 	for (i = 0; i < 8; i++) {
 		vp = d.col * mx[i] + d.line * my[i];
 		v2 = absv[i];
+
 		if (v1 > 0)
 			vp = ((double) vp) / (v1 * v2);
 		else
 			vp = 1.0;
+
 		if (vp > max) {
 			max = vp;
 			w = i;
 		}
 	}
+
 	for (i = 0; i < 8; i++) {
 		point(&d, sp->col + mx[i], sp->line + my[i]);
 		wt[i] = 0;
@@ -618,26 +622,35 @@ void chase(struct point *np, struct point *sp)
 		 */
 		if (same(&d, &money))
 			continue;
+
 		if (same(&d, &finish))
 			continue;
+
 		wt[i] = i == w ? loot / 10 : 1;
+
 		if (i == oldw)
 			wt[i] += loot / 20;
 	}
+
 	for (w = i = 0; i < 8; i++)
 		w += wt[i];
+
 	vp = ((random() >> 6) & 01777) % w;
+
 	for (i = 0; i < 8; i++)
 		if (vp < wt[i])
 			break;
 		else
 			vp -= wt[i];
+
 	if (i == 8) {
 		printw("failure\n");
 		i = 0;
+
 		while (wt[i] == 0)
 			i++;
 	}
+
 	oldw = w = i;
 	point(np, sp->col + mx[w], sp->line + my[w]);
 }
@@ -946,7 +959,7 @@ int chk(const struct point *sp)
 	int j;
 
 	if (same(sp, &money)) {
-		snake::treasure.display(snake::screen);
+		snake::money.display(snake::screen);
 		return (2);
 	}
 
