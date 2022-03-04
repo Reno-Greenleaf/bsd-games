@@ -103,7 +103,7 @@ namespace snake {
 	Finish finish;
 	Me you;
 	Monster monster;
-	struct point snake[6];
+	std::array<struct point, 6> snake;
 }
 
 int loot, penalty;
@@ -227,12 +227,7 @@ int main(int argc, char **argv)
 	you = snake::you.warp(obstacles);
 	finish = snake::finish.warp(obstacles);
 	money = snake::money.warp(obstacles);
-	snrand(&snake::snake[0]);
-
-	for (i = 1; i < 6; i++)
-		chase(&snake::snake[i], &snake::snake[i - 1]);
-
-	snake::monster.warp(snake::snake);
+	snake::monster.warp(obstacles); snake::snake = snake::monster.warp();
 
 	setup();
 	mainloop(obstacles);
@@ -464,39 +459,6 @@ void setup()
 	snake::monster.display(snake::screen);
 	snake::room.display(snake::screen);
 	refresh();
-}
-
-void snrand(struct point *sp)
-{
-	struct point p;
-
-	for (;;) {
-		p.col = random() % ccnt;
-		p.line = random() % lcnt;
-
-		/* make sure it's not on top of something else */
-		if (snake::room.occupies(p.col, p.line))
-			continue;
-
-		if (p.line == 0 && p.col < 5)
-			continue;
-
-		if (same(&p, &you))
-			continue;
-
-		if (same(&p, &money))
-			continue;
-
-		if (same(&p, &finish))
-			continue;
-
-		if (snake::monster.occupies(p.col, p.line))
-			continue;
-
-		break;
-	}
-
-	*sp = p;
 }
 
 int post(int iscore, int flag)

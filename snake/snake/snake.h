@@ -31,6 +31,7 @@
 
 #include "screen.h"
 #include <vector>
+#include <array>
 
 struct point {
 	int col, line;
@@ -65,7 +66,6 @@ int			post(int, int);
 int			pushsnake(std::vector<snake::IBody*>);
 void		setup(void);
 void		snap(void);
-void		snrand(struct point*); // find free random point
 void		spacewarp(int, std::vector<snake::IBody*>); // warp to a free random point
 void		stop(int) __attribute__((__noreturn__)); // end the game
 int			stretch(const struct point*);

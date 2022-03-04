@@ -28,7 +28,7 @@
  */
 #include "monster.h"
 
-bool snake::Monster::warp(struct point* positions)
+bool snake::Monster::warp(std::array<struct point, 6> positions)
 {
 	sections = positions;
 	return true;
@@ -47,7 +47,7 @@ bool snake::Monster::display(Screen screen)
 
 bool snake::Monster::occupies(int column, int row)
 {
-	if (!sections)
+	if (sections.empty())
 		return false;
 
 	for (int i = 0; i < 6; i++) {
@@ -60,7 +60,7 @@ bool snake::Monster::occupies(int column, int row)
 
 bool snake::Monster::intersects(IBody* body)
 {
-	if (!sections)
+	if (sections.empty())
 		return false;
 
 	for (int i = 0; i < 6; i++) {
@@ -75,4 +75,47 @@ struct point snake::Monster::warp(int horizontal, int vertical)
 {
 	struct point place;
 	return place;
+}
+
+struct point snake::Monster::warp(std::vector<IBody*> obstacles)
+{
+	bool found;
+
+	if (obstacles.empty())
+	{
+		sections[0].col = random() % settings::horizontalLimit;
+		sections[0].line = random() % settings::verticalLimit;
+	}
+
+	while (true) {
+		bool found = true;
+		sections[0].col = random() % settings::horizontalLimit;
+		sections[0].line = random() % settings::verticalLimit;
+
+		for (IBody* obstacle : obstacles)
+		{
+			if (obstacle == this)
+				continue;
+			else if (obstacle->occupies(sections[0].col, sections[0].line))
+			{
+				found = false;
+				break;
+			}
+		}
+
+		if (found)
+		{
+			break;
+		}
+	}
+
+	for (int i = 1; i < 6; i++)
+		chase(&sections[i], &sections[i - 1]);
+
+	return sections[0];
+}
+
+std::array<struct point, 6> snake::Monster::warp()
+{
+	return sections;
 }

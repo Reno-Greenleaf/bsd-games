@@ -29,6 +29,8 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
+#include <array>
+#include <stdlib.h>
 #include "snake.h"
 
 namespace snake {
@@ -36,7 +38,7 @@ namespace snake {
 	{
 		public:
 			bool warp( // move the monster
-				struct point* // to the given positions
+				std::array<struct point, 6> // to the given positions
 			);
 			bool display( // show the monster
 				Screen // on screen
@@ -47,9 +49,11 @@ namespace snake {
 			);
 			bool intersects(IBody*);
             struct point warp(int horizontal, int vertical);
+            struct point warp(std::vector<IBody*>);
+            std::array<struct point, 6> warp();
 
 		private:
-			struct point* sections;
+			std::array<struct point, 6> sections;
 	};
 }
 
