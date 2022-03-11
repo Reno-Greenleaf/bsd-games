@@ -104,9 +104,7 @@ struct point snake::Monster::warp(std::vector<IBody*> obstacles)
 		}
 
 		if (found)
-		{
 			break;
-		}
 	}
 
 	for (int i = 1; i < 6; i++)

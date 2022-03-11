@@ -235,7 +235,7 @@ int main(int argc, char **argv)
 	return (0);
 }
 
-struct point * point(struct point *ps, int x, int y)
+struct point* point(struct point* ps, int x, int y)
 {
 	ps->col = x;
 	ps->line = y;
@@ -451,8 +451,6 @@ void mainloop(std::vector<snake::IBody*> obstacles)
  */
 void setup()
 {
-	int i;
-
 	erase();
 	snake::finish.display(snake::screen);
 	snake::money.display(snake::screen);
@@ -531,25 +529,29 @@ void flushi()
 	tcflush(0, TCIFLUSH);
 }
 
-const int     mx[8] = {
+const int mx[8] = {
 	0, 1, 1, 1, 0, -1, -1, -1
 };
-const int     my[8] = {
+const int my[8] = {
 	-1, -1, 0, 1, 1, 1, 0, -1
 };
-const float   absv[8] = {
+
+const float absv[8] = {
 	1, 1.4, 1, 1.4, 1, 1.4, 1, 1.4
 };
 int     oldw = 0;
 
-void chase(struct point *np, struct point *sp)
+void chase(
+	struct point* np,
+	struct point* sp // unclear; seems to be snakes "neck", next point right after its head
+)
 {
 	/* this algorithm has bugs; otherwise the snake would get too good */
 	struct point d;
-	int     w, i, wt[8];
+	int     w, i, wt[8]; // 8 is the amount of surrounding points.
 	double  v1, v2, vp, max;
-	point(&d, you.col - sp->col, you.line - sp->line);
-	v1 = sqrt((double) (d.col * d.col + d.line * d.line));
+	point(&d, you.col - sp->col, you.line - sp->line); // set d to vector from sp to you
+	v1 = sqrt((double) (d.col * d.col + d.line * d.line)); // Pythagorean theorem, distance between sp and you
 	w = 0;
 	max = 0;
 
@@ -572,9 +574,6 @@ void chase(struct point *np, struct point *sp)
 		point(&d, sp->col + mx[i], sp->line + my[i]);
 		wt[i] = 0;
 
-		if (snake::room.occupies(d.col, d.line))
-			continue;
-
 		/*
 		 * Change to allow snake to eat you if you're on the money,
 		 * otherwise, you can just crouch there until the snake goes
@@ -582,10 +581,11 @@ void chase(struct point *np, struct point *sp)
 		 *
 		 * if (d.line == 0 && d.col < 5) continue;
 		 */
-		if (same(&d, &money))
-			continue;
-
-		if (same(&d, &finish))
+		if (
+			snake::room.occupies(d.col, d.line)
+			|| snake::money.occupies(d.col, d.line)
+			|| snake::finish.occupies(d.col, d.line)
+		)
 			continue;
 
 		wt[i] = i == w ? loot / 10 : 1;
@@ -700,7 +700,7 @@ void snap()
 	refresh();
 }
 
-int stretch(const struct point *ps)
+int stretch(const struct point* ps)
 {
 	struct point p;
 	point(&p, you.col, you.line);
@@ -730,7 +730,6 @@ int stretch(const struct point *ps)
 		}
 		return (1);
 	} else
-
 		if ((abs(ps->line - you.line) < (lcnt/7)) && (you.col != ps->col)) {
 			p.line = you.line;
 
@@ -764,7 +763,7 @@ int stretch(const struct point *ps)
 	return (0);
 }
 
-void surround(struct point *ps)
+void surround(struct point* ps)
 {
 	int     j;
 
@@ -813,7 +812,7 @@ void surround(struct point *ps)
 	delay(6);
 }
 
-void win(const struct point *ps)
+void win(const struct point* ps)
 {
 	struct point x;
 	int     j, k;
@@ -882,50 +881,48 @@ int pushsnake(std::vector<snake::IBody*> obstacles)
 	snake::monster.warp(snake::snake);
 	snake::monster.display(snake::screen);
 
-	for (i = 0; i < 6; i++) {
+	if (snake::monster.intersects(&snake::you) || snake::you.occupies(tmp.col, tmp.line)) {
+		surround(&you);
+		i = (cashvalue) % 10;
+		bonus = ((random() >> 8) & 0377) % 10;
+		mvprintw(lcnt + 1, 0, "%d\n", bonus);
+		refresh();
+		delay(30);
 
-		if (same(&snake::snake[i], &you) || same(&tmp, &you)) {
-			surround(&you);
-			i = (cashvalue) % 10;
-			bonus = ((random() >> 8) & 0377) % 10;
-			mvprintw(lcnt + 1, 0, "%d\n", bonus);
-			refresh();
-			delay(30);
-
-			if (bonus == i) {
-				spacewarp(1, obstacles);
-				snake::log.write("bonus", cashvalue, ccnt, lcnt);
-				flushi();
-				return (1);
-			}
-
+		if (bonus == i) {
+			spacewarp(1, obstacles);
+			snake::log.write("bonus", cashvalue, ccnt, lcnt);
 			flushi();
-			endwin();
-			if (loot >= penalty) {
-				printf("\nYou and your $%d have been eaten\n",
-				    cashvalue);
-			} else {
-				printf("\nThe snake ate you.  You owe $%d.\n",
-				    -cashvalue);
-			}
-			snake::log.write("eaten", cashvalue, ccnt, lcnt);
-			length(moves);
-			exit(0);
+			return (1);
 		}
+
+		flushi();
+		endwin();
+		if (loot >= penalty) {
+			printf("\nYou and your $%d have been eaten\n",
+			    cashvalue);
+		} else {
+			printf("\nThe snake ate you.  You owe $%d.\n",
+			    -cashvalue);
+		}
+		snake::log.write("eaten", cashvalue, ccnt, lcnt);
+		length(moves);
+		exit(0);
 	}
+
 	return (0);
 }
 
-int chk(const struct point *sp)
+int chk(const struct point* sp)
 {
 	int j;
 
-	if (same(sp, &money)) {
+	if (snake::money.occupies(sp->col, sp->line)) {
 		snake::money.display(snake::screen);
 		return (2);
 	}
 
-	if (same(sp, &finish)) {
+	if (snake::finish.occupies(sp->col, sp->line)) {
 		snake::finish.display(snake::screen);
 		return (3);
 	}
@@ -945,7 +942,7 @@ int chk(const struct point *sp)
 		return (5);
 	}
 
-	if (same(sp, &you)) {
+	if (snake::you.occupies(sp->col, sp->line)) {
 		snake::you.display(snake::screen);
 		return (1);
 	}
