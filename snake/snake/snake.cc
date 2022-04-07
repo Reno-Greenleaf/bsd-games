@@ -229,6 +229,10 @@ int main(int argc, char **argv)
 	money = snake::money.warp(obstacles);
 	snake::monster.warp(obstacles); snake::snake = snake::monster.warp();
 
+	snake::monster.avoid(&snake::money);
+	snake::monster.avoid(&snake::room);
+	snake::monster.avoid(&snake::finish);
+
 	setup();
 	mainloop(obstacles);
 	/* NOTREACHED */
@@ -543,7 +547,8 @@ int     oldw = 0;
 
 void chase(
 	struct point* np,
-	struct point* sp // unclear; seems to be snakes "neck", next point right after its head
+	struct point* sp, // unclear; seems to be snakes "neck", next point right after its head
+	std::vector<snake::IBody*> to_avoid
 )
 {
 	/* this algorithm has bugs; otherwise the snake would get too good */
@@ -581,17 +586,15 @@ void chase(
 		 *
 		 * if (d.line == 0 && d.col < 5) continue;
 		 */
-		if (
-			snake::room.occupies(d.col, d.line)
-			|| snake::money.occupies(d.col, d.line)
-			|| snake::finish.occupies(d.col, d.line)
-		)
-			continue;
+		for (snake::IBody* obstacle : to_avoid)
+			if (obstacle->occupies(d.col, d.line))
+				goto next_point;
 
 		wt[i] = i == w ? loot / 10 : 1;
 
 		if (i == oldw)
 			wt[i] += loot / 20;
+		next_point:;
 	}
 
 	for (w = i = 0; i < 8; i++)
@@ -877,7 +880,7 @@ int pushsnake(std::vector<snake::IBody*> obstacles)
 	for (i = 4; i >= 0; i--)
 		snake::snake[i + 1] = snake::snake[i];
 
-	chase(&snake::snake[0], &snake::snake[1]);
+	chase(&snake::snake[0], &snake::snake[1], std::vector<snake::IBody*> {&snake::money, &snake::room, &snake::finish});
 	snake::monster.warp(snake::snake);
 	snake::monster.display(snake::screen);
 
@@ -898,12 +901,11 @@ int pushsnake(std::vector<snake::IBody*> obstacles)
 
 		flushi();
 		endwin();
+
 		if (loot >= penalty) {
-			printf("\nYou and your $%d have been eaten\n",
-			    cashvalue);
+			printf("\nYou and your $%d have been eaten\n", cashvalue);
 		} else {
-			printf("\nThe snake ate you.  You owe $%d.\n",
-			    -cashvalue);
+			printf("\nThe snake ate you.  You owe $%d.\n", -cashvalue);
 		}
 		snake::log.write("eaten", cashvalue, ccnt, lcnt);
 		length(moves);

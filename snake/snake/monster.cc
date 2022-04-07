@@ -108,7 +108,7 @@ struct point snake::Monster::warp(std::vector<IBody*> obstacles)
 	}
 
 	for (int i = 1; i < 6; i++)
-		chase(&sections[i], &sections[i - 1]);
+		chase(&sections[i], &sections[i - 1], avoidables);
 
 	return sections[0];
 }
@@ -116,4 +116,10 @@ struct point snake::Monster::warp(std::vector<IBody*> obstacles)
 std::array<struct point, 6> snake::Monster::warp()
 {
 	return sections;
+}
+
+bool snake::Monster::avoid(snake::IBody* body)
+{
+	avoidables.push_back(body);
+	return false;
 }

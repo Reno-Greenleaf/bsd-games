@@ -34,7 +34,7 @@
 #include "snake.h"
 
 namespace snake {
-	class Monster : public IBody
+	class Monster : public IBody, public IAI
 	{
 		public:
 			bool warp( // move the monster
@@ -52,8 +52,11 @@ namespace snake {
             struct point warp(std::vector<IBody*>);
             std::array<struct point, 6> warp();
 
+            bool avoid(IBody*);
+
 		private:
 			std::array<struct point, 6> sections;
+            std::vector<IBody*> avoidables;
 	};
 }
 

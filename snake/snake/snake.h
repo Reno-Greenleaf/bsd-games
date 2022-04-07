@@ -54,24 +54,30 @@ namespace snake {
                 int // and vertical limits
             ) = 0;
     };
+
+    class IAI
+    {
+        public:
+            virtual bool avoid(IBody*) = 0;
+    };
 }
 
 void mainloop(std::vector<snake::IBody*>);
-void		chase(struct point*, struct point*);
-int 		chk(const struct point*); // redraw the given point
-void		flushi(void);
-void		length(int); // message about how many moves you made
-struct point   *point(struct point*, int, int); // create (fill) a point
-int			post(int, int);
-int			pushsnake(std::vector<snake::IBody*>);
-void		setup(void);
-void		snap(void);
-void		spacewarp(int, std::vector<snake::IBody*>); // warp to a free random point
-void		stop(int) __attribute__((__noreturn__)); // end the game
-int			stretch(const struct point*);
-void		surround(struct point*); // animation of snake catching you
-void		suspend(void); // pause, put the game to background/sleep mode
-void		win(const struct point*); // animation of victory/escape
-void		winnings(int); // update score (money collected)
+void chase(struct point*, struct point*, std::vector<snake::IBody*>);
+int chk(const struct point*); // redraw the given point
+void flushi(void);
+void length(int); // message about how many moves you made
+struct point* point(struct point*, int, int); // create (fill) a point
+int post(int, int);
+int pushsnake(std::vector<snake::IBody*>);
+void setup(void);
+void snap(void);
+void spacewarp(int, std::vector<snake::IBody*>); // warp to a free random point
+void stop(int) __attribute__((__noreturn__)); // end the game
+int stretch(const struct point*);
+void surround(struct point*); // animation of snake catching you
+void suspend(void); // pause, put the game to background/sleep mode
+void win(const struct point*); // animation of victory/escape
+void winnings(int); // update score (money collected)
 
 #endif // end of include guard
