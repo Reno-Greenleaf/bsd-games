@@ -259,157 +259,167 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 		/* Highlight you, not left & above */
 		snake::you.display(snake::screen);
 		refresh();
+
 		if (((c = getch()) <= '9') && (c >= '0')) {
 			repeat = c - '0';
+
 			while (((c = getch()) <= '9') && (c >= '0'))
 				repeat = 10 * repeat + (c - '0');
+
 		} else {
 			if (c != '.')
 				repeat = 1;
 		}
+
 		if (c == '.') {
 			c = lastc;
 		}
+
 		if (!fast)
 			flushi();
+
 		lastc = c;
+
 		switch (c) {
-		case CTRL('z'):
-			suspend();
-			continue;
-		case EOT:
-		case 'x':
-		case 0177:	/* del or end of file */
-			endwin();
-			length(moves);
-			snake::log.write("quit", cashvalue, ccnt, lcnt);
-			exit(0);
-		case CTRL('l'):
-			setup();
-			winnings(cashvalue);
-			continue;
-		case 'p':
-		case 'd':
-			snap();
-			continue;
-		case 'w':
-			spacewarp(0, obstacles);
-			continue;
-		case 'A':
-			repeat = you.col;
-			c = 'h';
-			break;
-		case 'H':
-		case 'S':
-			repeat = you.col - money.col;
-			c = 'h';
-			break;
-		case 'T':
-			repeat = you.line;
-			c = 'k';
-			break;
-		case 'K':
-		case 'E':
-			repeat = you.line - money.line;
-			c = 'k';
-			break;
-		case 'P':
-			repeat = ccnt - 1 - you.col;
-			c = 'l';
-			break;
-		case 'L':
-		case 'F':
-			repeat = money.col - you.col;
-			c = 'l';
-			break;
-		case 'B':
-			repeat = lcnt - 1 - you.line;
-			c = 'j';
-			break;
-		case 'J':
-		case 'C':
-			repeat = money.line - you.line;
-			c = 'j';
-			break;
+			case CTRL('z'):
+				suspend();
+				continue;
+			case EOT:
+			case 'x':
+			case 0177:	/* del or end of file */
+				endwin();
+				length(moves);
+				snake::log.write("quit", cashvalue, ccnt, lcnt);
+				exit(0);
+			case CTRL('l'):
+				setup();
+				winnings(cashvalue);
+				continue;
+			case 'p':
+			case 'd':
+				snap();
+				continue;
+			case 'w':
+				spacewarp(0, obstacles);
+				continue;
+			case 'A':
+				repeat = you.col;
+				c = 'h';
+				break;
+			case 'H':
+			case 'S':
+				repeat = you.col - money.col;
+				c = 'h';
+				break;
+			case 'T':
+				repeat = you.line;
+				c = 'k';
+				break;
+			case 'K':
+			case 'E':
+				repeat = you.line - money.line;
+				c = 'k';
+				break;
+			case 'P':
+				repeat = ccnt - 1 - you.col;
+				c = 'l';
+				break;
+			case 'L':
+			case 'F':
+				repeat = money.col - you.col;
+				c = 'l';
+				break;
+			case 'B':
+				repeat = lcnt - 1 - you.line;
+				c = 'j';
+				break;
+			case 'J':
+			case 'C':
+				repeat = money.line - you.line;
+				c = 'j';
+				break;
 		}
+
 		for (k = 1; k <= repeat; k++) {
 			moves++;
+		
 			switch (c) {
-			case 's':
-			case 'h':
+				case 's':
+				case 'h':
 #ifdef KEY_LEFT
-			case KEY_LEFT:
+				case KEY_LEFT:
 #endif
-			case '\b':
-				if (!snake::room.occupies(you.col-1, you.line)) {
+				case '\b':
+					if (!snake::room.occupies(you.col-1, you.line)) {
 
-					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col, you.line, snake::BLACK);
+						if ((fast) || (k == 1))
+							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
-					you.col--;
-					snake::you.warp(you);
+						you.col--;
+						snake::you.warp(you);
 
-					if ((fast) || (k == repeat) || (you.col == 0))
-						snake::you.display(snake::screen);
-				}
-				break;
-			case 'f':
-			case 'l':
+						if ((fast) || (k == repeat) || (you.col == 0))
+							snake::you.display(snake::screen);
+					}
+					break;
+				case 'f':
+				case 'l':
 #ifdef KEY_RIGHT
-			case KEY_RIGHT:
+				case KEY_RIGHT:
 #endif
-			case ' ':
-				if (!snake::room.occupies(you.col+1, you.line)) {
+				case ' ':
+					if (!snake::room.occupies(you.col+1, you.line)) {
 
-					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col, you.line, snake::BLACK);
+						if ((fast) || (k == 1))
+							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
-					you.col++;
-					snake::you.warp(you);
+						you.col++;
+						snake::you.warp(you);
 
-					if ((fast) || (k == repeat) || (you.col == ccnt - 1))
-						snake::you.display(snake::screen);
-				}
-				break;
-			case CTRL('p'):
-			case 'e':
-			case 'k':
+						if ((fast) || (k == repeat) || (you.col == ccnt - 1))
+							snake::you.display(snake::screen);
+					}
+					break;
+				case CTRL('p'):
+				case 'e':
+				case 'k':
 #ifdef KEY_UP
-			case KEY_UP:
+				case KEY_UP:
 #endif
-			case 'i':
-				if (!snake::room.occupies(you.col, you.line-1)) {
+				case 'i':
+					if (!snake::room.occupies(you.col, you.line-1)) {
 
-					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col, you.line, snake::BLACK);
+						if ((fast) || (k == 1))
+							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
-					you.line--;
-					snake::you.warp(you);
+						you.line--;
+						snake::you.warp(you);
 
-					if ((fast) || (k == repeat) || (you.line == 0))
-						snake::you.display(snake::screen);
-				}
-				break;
-			case CTRL('n'):
-			case 'c':
-			case 'j':
+						if ((fast) || (k == repeat) || (you.line == 0))
+							snake::you.display(snake::screen);
+					}
+
+					break;
+				case CTRL('n'):
+				case 'c':
+				case 'j':
 #ifdef KEY_DOWN
-			case KEY_DOWN:
+				case KEY_DOWN:
 #endif
-			case LF:
-			case 'm':
-				if (!snake::room.occupies(you.col, you.line+1)) {
+				case LF:
+				case 'm':
+					if (!snake::room.occupies(you.col, you.line+1)) {
 
-					if ((fast) || (k == 1))
-						snake::screen.print(' ', you.col, you.line, snake::BLACK);
+						if ((fast) || (k == 1))
+							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
-					you.line++;
-					snake::you.warp(you);
+						you.line++;
+						snake::you.warp(you);
 
-					if ((fast) || (k == repeat) || (you.line == lcnt - 1))
-						snake::you.display(snake::screen);
-				}
-				break;
+						if ((fast) || (k == repeat) || (you.line == lcnt - 1))
+							snake::you.display(snake::screen);
+					}
+					break;
 			}
 
 			if (snake::you.intersects(&snake::money)) {
