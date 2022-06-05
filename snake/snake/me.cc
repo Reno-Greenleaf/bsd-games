@@ -98,3 +98,10 @@ struct point snake::Me::warp(std::vector<IBody*> obstacles)
         }
     }
 }
+
+snake::IPoint* snake::Me::move(int x, int y)
+{
+    column += x;
+    row += y;
+    return this;
+}

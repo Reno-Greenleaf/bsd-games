@@ -32,7 +32,7 @@
 #include "snake.h"
 
 namespace snake {
-	class Me : public IBody // main character representing a player
+	class Me : public IBody, public IPoint // main character representing a player
 	{
 		public:
 			struct point warp(int, int);
@@ -46,6 +46,7 @@ namespace snake {
 			);
 			bool intersects(IBody*);
             struct point warp(std::vector<IBody*>);
+            IPoint* move(int, int);
 
 		private:
 			int column, row;

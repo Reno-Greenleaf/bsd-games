@@ -249,12 +249,12 @@ struct point* point(struct point* ps, int x, int y)
 /* Main command loop */
 void mainloop(std::vector<snake::IBody*> obstacles)
 {
-	int     k;
-	int     repeat = 1;
+	int k;
+	int repeat = 1;
 	int	lastc = 0;
 
 	for (;;) {
-		int     c;
+		int c;
 
 		/* Highlight you, not left & above */
 		snake::you.display(snake::screen);
@@ -356,7 +356,7 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 						you.col--;
-						snake::you.warp(you);
+						snake::you.move(-1, 0);
 
 						if ((fast) || (k == repeat) || (you.col == 0))
 							snake::you.display(snake::screen);
@@ -374,7 +374,7 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 						you.col++;
-						snake::you.warp(you);
+						snake::you.move(1, 0);
 
 						if ((fast) || (k == repeat) || (you.col == ccnt - 1))
 							snake::you.display(snake::screen);
@@ -393,7 +393,7 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 						you.line--;
-						snake::you.warp(you);
+						snake::you.move(0, -1);
 
 						if ((fast) || (k == repeat) || (you.line == 0))
 							snake::you.display(snake::screen);
@@ -414,7 +414,7 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 							snake::screen.print(' ', you.col, you.line, snake::BLACK);
 
 						you.line++;
-						snake::you.warp(you);
+						snake::you.move(0, 1);
 
 						if ((fast) || (k == repeat) || (you.line == lcnt - 1))
 							snake::you.display(snake::screen);

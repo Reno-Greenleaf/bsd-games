@@ -60,6 +60,12 @@ namespace snake {
         public:
             virtual bool avoid(IBody*) = 0;
     };
+
+    class IPoint
+    {
+        public:
+            virtual IPoint* move(int, int) = 0;
+    };
 }
 
 void mainloop(std::vector<snake::IBody*>);
