@@ -33,7 +33,7 @@
 #include "snake.h"
 
 namespace snake {
-	class Finish : public IBody
+	class Finish : public IBody, public ICurses
 	{
 		public:
 			Finish( // new exit in the given
@@ -51,6 +51,7 @@ namespace snake {
 			bool intersects(IBody*);
             struct point warp(int horizontal, int vertical);
             struct point warp(std::vector<IBody*>);
+            std::vector<struct cell> cells();
 
 		private:
 			int column, row;

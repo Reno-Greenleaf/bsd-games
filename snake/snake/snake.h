@@ -37,6 +37,12 @@ struct point {
 	int col, line;
 };
 
+struct cell {
+    int column, row;
+    const char symbol;
+
+};
+
 namespace settings {
     extern int horizontalLimit;
     extern int verticalLimit;
@@ -53,6 +59,12 @@ namespace snake {
                 int, // horizontal
                 int // and vertical limits
             ) = 0;
+    };
+
+    class ICurses // something that can be shown in terminal
+    {
+        public:
+            virtual std::vector<struct cell> cells() = 0;
     };
 
     class IAI
@@ -77,6 +89,7 @@ struct point* point(struct point*, int, int); // create (fill) a point
 int post(int, int);
 int pushsnake(std::vector<snake::IBody*>);
 void setup(void);
+void setup(snake::Screen, std::vector<snake::ICurses*>); // redraw all
 void snap(void);
 void spacewarp(int, std::vector<snake::IBody*>); // warp to a free random point
 void stop(int) __attribute__((__noreturn__)); // end the game
