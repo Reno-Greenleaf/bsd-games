@@ -40,7 +40,7 @@ struct point {
 struct cell {
     int column, row;
     const char symbol;
-
+    int colour;
 };
 
 namespace settings {

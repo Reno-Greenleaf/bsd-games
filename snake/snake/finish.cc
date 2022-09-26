@@ -97,7 +97,7 @@ struct point snake::Finish::warp(std::vector<IBody*> obstacles)
 
 std::vector<struct cell> snake::Finish::cells()
 {
-    struct cell new_cell = {this->column, this->row, '#'};
+    struct cell new_cell = {this->column, this->row, '#', snake::WHITE};
     std::vector<struct cell> cells {new_cell};
     return cells;
 }

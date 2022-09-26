@@ -466,9 +466,8 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 void setup()
 {
 	erase();
-	std::vector<snake::ICurses*> to_show {&snake::finish};
+	std::vector<snake::ICurses*> to_show {&snake::finish, &snake::money};
 	setup(snake::screen, to_show);
-	snake::money.display(snake::screen);
 	snake::monster.display(snake::screen);
 	snake::room.display(snake::screen);
 	refresh();
@@ -480,7 +479,7 @@ void setup(snake::Screen screen, std::vector<snake::ICurses*> bodies)
 
 	for (snake::ICurses* body : bodies)
 		for (struct cell piece : body->cells())
-			screen.print(piece.symbol, piece.column, piece.row, snake::WHITE);
+			screen.print(piece.symbol, piece.column, piece.row, piece.colour);
 
 	refresh();
 }

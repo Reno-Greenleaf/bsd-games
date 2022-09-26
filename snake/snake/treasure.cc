@@ -96,3 +96,10 @@ struct point snake::Treasure::warp(std::vector<IBody*> obstacles)
         }
     }
 }
+
+std::vector<struct cell> snake::Treasure::cells()
+{
+    struct cell new_cell = {this->column, this->row, '$', snake::YELLOW};
+    std::vector<struct cell> cells {new_cell};
+    return cells;
+}
