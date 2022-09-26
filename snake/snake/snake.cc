@@ -466,13 +466,15 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 void setup()
 {
 	erase();
-	std::vector<snake::ICurses*> to_show {&snake::finish, &snake::money};
+	std::vector<snake::ICurses*> to_show {&snake::finish, &snake::money, &snake::monster};
 	setup(snake::screen, to_show);
-	snake::monster.display(snake::screen);
 	snake::room.display(snake::screen);
 	refresh();
 }
 
+/**
+ * Full screen refresh.
+ */
 void setup(snake::Screen screen, std::vector<snake::ICurses*> bodies)
 {
 	erase();
