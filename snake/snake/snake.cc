@@ -479,9 +479,14 @@ void setup(snake::Screen screen, std::vector<snake::ICurses*> bodies)
 {
 	erase();
 
-	for (snake::ICurses* body : bodies)
-		for (struct cell piece : body->cells())
+	for (snake::ICurses* body : bodies) {
+		body->rewind();
+
+		while (body->has_more_cells()) {
+			struct cell piece = body->get_next_cell();
 			screen.print(piece.symbol, piece.column, piece.row, piece.colour);
+		}
+	}
 
 	refresh();
 }

@@ -103,3 +103,20 @@ std::vector<struct cell> snake::Treasure::cells()
     std::vector<struct cell> cells {new_cell};
     return cells;
 }
+
+void snake::Treasure::rewind()
+{
+    shown = false;
+}
+
+bool snake::Treasure::has_more_cells()
+{
+    return !shown;
+}
+
+struct cell snake::Treasure::get_next_cell()
+{
+    struct cell new_cell = {column, row, '$', snake::YELLOW};
+    shown = true;
+    return new_cell;
+}

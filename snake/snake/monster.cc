@@ -137,3 +137,22 @@ std::vector<struct cell> snake::Monster::cells()
 
 	return result;
 }
+
+void snake::Monster::rewind()
+{
+	current_cell = 5;
+}
+
+bool snake::Monster::has_more_cells()
+{
+    return current_cell >= 0;
+}
+
+struct cell snake::Monster::get_next_cell()
+{
+	struct point current_point = sections[current_cell];
+	const char symbol = current_cell > 0 ? 's' : 'S';
+    struct cell new_cell = {current_point.col, current_point.line, symbol, snake::WHITE};
+    current_cell--;
+    return new_cell;
+}

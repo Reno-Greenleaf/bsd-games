@@ -101,3 +101,20 @@ std::vector<struct cell> snake::Finish::cells()
     std::vector<struct cell> cells {new_cell};
     return cells;
 }
+
+void snake::Finish::rewind()
+{
+    shown = false;
+}
+
+bool snake::Finish::has_more_cells()
+{
+    return !shown;
+}
+
+struct cell snake::Finish::get_next_cell()
+{
+    struct cell new_cell = {column, row, '#', snake::WHITE};
+    shown = true;
+    return new_cell;
+}

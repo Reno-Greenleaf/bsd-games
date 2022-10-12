@@ -52,12 +52,16 @@ namespace snake {
             struct point warp(std::vector<IBody*>);
             std::array<struct point, 6> warp();
             std::vector<struct cell> cells();
+            void rewind();
+            bool has_more_cells();
+            struct cell get_next_cell();
 
             bool avoid(IBody*);
 
 		private:
 			std::array<struct point, 6> sections;
             std::vector<IBody*> avoidables;
+            int current_cell;
 	};
 }
 
