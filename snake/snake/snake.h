@@ -64,7 +64,6 @@ namespace snake {
     class ICurses // collection of cells to be rendered in a terminal
     {
         public:
-            virtual std::vector<struct cell> cells() = 0;
             virtual void rewind() = 0; // make first cell the next one
             virtual bool has_more_cells() = 0; // whether there're more cells
             virtual struct cell get_next_cell() = 0; // get next cell, if there's one

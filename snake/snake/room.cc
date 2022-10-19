@@ -73,3 +73,49 @@ struct point snake::Room::warp(std::vector<snake::IBody*> obstacles)
     struct point place;
     return place;
 }
+
+void snake::Room::rewind()
+{
+    current_wall = 1;
+    current_section = 1;
+}
+
+bool snake::Room::has_more_cells()
+{
+    return current_wall != 4 || current_section != height + 1;
+}
+
+struct cell snake::Room::get_next_cell()
+{
+    int column, row;
+    char symbol;
+
+    if (current_wall <= 2) { // "horizontal" walls
+        symbol = '-';
+        column = current_section;
+        row = current_wall == 1 ? 0 : height;
+
+        if (column == width) {
+            current_section = 0;
+            current_wall++;
+        } else {
+            current_section++;
+        }
+    } else if (current_wall <= 4) { // "vertical" walls
+        symbol = '|';
+        column = current_wall == 3 ? 0 : width;
+        row = current_section;
+
+        if (current_wall == 4 && row == height) { // last corner
+            current_section++;
+        } else if (row >= height) {
+            current_section = 0;
+            current_wall++;
+        } else {
+            current_section++;
+        }
+    }
+
+    struct cell new_cell = {column, row, symbol, snake::WHITE};
+    return new_cell;
+}

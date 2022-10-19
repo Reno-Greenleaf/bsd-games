@@ -50,7 +50,6 @@ namespace snake {
 			bool intersects(IBody*);
             struct point warp(int horizontal, int vertical);
             struct point warp(std::vector<IBody*>);
-            std::vector<struct cell> cells();
             void rewind();
             bool has_more_cells();
             struct cell get_next_cell();

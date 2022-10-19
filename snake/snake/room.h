@@ -32,7 +32,7 @@
 #include "snake.h"
 
 namespace snake {
-	class Room : public IBody
+	class Room : public IBody, public ICurses
 	{
 		public:
 			bool load( // simple rectangular room with the given
@@ -49,9 +49,12 @@ namespace snake {
 			bool intersects(IBody*);
             struct point warp(int horizontal, int vertical); // makes sense only on creation, but who knows...
             struct point warp(std::vector<snake::IBody*>);
+            void rewind();
+            bool has_more_cells();
+            struct cell get_next_cell();
 
 		private:
-			int width, height;
+			int width, height, current_wall, current_section;
 	};
 }
 

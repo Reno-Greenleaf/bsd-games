@@ -466,9 +466,8 @@ void mainloop(std::vector<snake::IBody*> obstacles)
 void setup()
 {
 	erase();
-	std::vector<snake::ICurses*> to_show {&snake::finish, &snake::money, &snake::monster};
+	std::vector<snake::ICurses*> to_show {&snake::finish, &snake::money, &snake::monster, &snake::room};
 	setup(snake::screen, to_show);
-	snake::room.display(snake::screen);
 	refresh();
 }
 

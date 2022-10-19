@@ -124,20 +124,6 @@ bool snake::Monster::avoid(snake::IBody* body)
 	return false;
 }
 
-std::vector<struct cell> snake::Monster::cells()
-{
-	std::vector<struct cell> result;
-	struct cell head {sections[0].col, sections[0].line, 'S', snake::GREEN};
-	result.push_back(head);
-
-	for (int i = 1; i <= 5; i++) {
-		struct cell next_cell {sections[i].col, sections[i].line, 's', snake::GREEN};
-		result.push_back(next_cell);
-	}
-
-	return result;
-}
-
 void snake::Monster::rewind()
 {
 	current_cell = 5;

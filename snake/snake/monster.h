@@ -51,7 +51,6 @@ namespace snake {
             struct point warp(int horizontal, int vertical);
             struct point warp(std::vector<IBody*>);
             std::array<struct point, 6> warp();
-            std::vector<struct cell> cells();
             void rewind();
             bool has_more_cells();
             struct cell get_next_cell();
