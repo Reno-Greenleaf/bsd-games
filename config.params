@@ -2,7 +2,7 @@
 # Debian package.
 
 # Don't run configure interactively.
-bsd_games_cfg_non_interactive=y
+bsd_games_cfg_non_interactive=n
 
 # Install into here for building the package.
 bsd_games_cfg_install_prefix=`pwd`/debian/bsdgames
