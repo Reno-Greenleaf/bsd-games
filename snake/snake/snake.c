@@ -72,12 +72,9 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include <termios.h>
 
 #include "pathnames.h"
+#include "snake.h"
 
 #define cashvalue chunk*(loot-penalty)/25
-
-struct point {
-	int col, line;
-};
 
 #define	same(s1, s2) ((s1)->line == (s2)->line && (s1)->col == (s2)->col)
 
@@ -114,30 +111,6 @@ FILE *logfile;
 
 int	lcnt, ccnt;	// user's idea of screen size
 int	chunk; // amount of money given at a time
-
-void chase(struct point*, struct point*);
-int chk(const struct point*);
-void drawbox(void);
-void flushi(void);
-void home(void);
-void length(int);
-void logit(const char*);
-int main(int, char**);
-void mainloop(void) __attribute__((__noreturn__));
-struct point* point(struct point*, int, int);
-int post(int, int);
-int	pushsnake(void);
-void right(const struct point*);
-void setup(void);
-void snap(void);
-void snrand(struct point*);
-void spacewarp(int);
-void stop(int) __attribute__((__noreturn__));
-int	stretch(const struct point*);
-void surround(struct point*);
-void suspend(void);
-void win(const struct point*);
-void winnings(int);
 
 int main(int argc, char** argv) {
 	int     ch, i;
