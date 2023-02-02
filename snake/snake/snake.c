@@ -418,9 +418,10 @@ void setup() {
 	pchar(&you, ME);
 	pchar(&finish, GOAL);
 	pchar(&money, TREASURE);
-	for (i = 1; i < 6; i++) {
+
+	for (i = 1; i < 6; i++)
 		pchar(&snake[i], SNAKETAIL);
-	}
+
 	pchar(&snake[0], SNAKEHEAD);
 	drawbox();
 	refresh();
@@ -433,6 +434,7 @@ void drawbox() {
 		mvaddch(0, i, '-');
 		mvaddch(lcnt + 1, i, '-');
 	}
+
 	for (i = 0; i <= lcnt + 1; i++) {
 		mvaddch(i, 0, '|');
 		mvaddch(i, ccnt + 1, '|');
@@ -450,17 +452,23 @@ void snrand(struct point* sp) {
 		/* make sure it's not on top of something else */
 		if (p.line == 0 && p.col < 5)
 			continue;
+
 		if (same(&p, &you))
 			continue;
+
 		if (same(&p, &money))
 			continue;
+
 		if (same(&p, &finish))
 			continue;
+
 		for (i = 0; i < 6; i++)
 			if (same(&p, &snake[i]))
 				break;
+
 		if (i < 6)
 			continue;
+
 		break;
 	}
 	*sp = p;
@@ -484,6 +492,7 @@ int post(int iscore, int flag) {
 	if ((uid = getuid()) <= 1) {
 		if (flag)
 			printf("No saved scores for uid %d.\n", uid);
+
 		return (1);
 	}
 	if (rawscores < 0) {
