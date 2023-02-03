@@ -238,151 +238,170 @@ void mainloop() {
 		/* Highlight you, not left & above */
 		move(you.line + 1, you.col + 1);
 		refresh();
+
 		if (((c = getch()) <= '9') && (c >= '0')) {
 			repeat = c - '0';
+
 			while (((c = getch()) <= '9') && (c >= '0'))
 				repeat = 10 * repeat + (c - '0');
 		} else {
 			if (c != '.')
 				repeat = 1;
 		}
+
 		if (c == '.') {
 			c = lastc;
 		}
+
 		if (!fast)
 			flushi();
+
 		lastc = c;
+
 		switch (c) {
-		case CTRL('z'):
-			suspend();
-			continue;
-		case EOT:
-		case 'x':
-		case 0177:	/* del or end of file */
-			endwin();
-			length(moves);
-			logit("quit");
-			exit(0);
-		case CTRL('l'):
-			setup();
-			winnings(cashvalue);
-			continue;
-		case 'p':
-		case 'd':
-			snap();
-			continue;
-		case 'w':
-			spacewarp(0);
-			continue;
-		case 'A':
-			repeat = you.col;
-			c = 'h';
-			break;
-		case 'H':
-		case 'S':
-			repeat = you.col - money.col;
-			c = 'h';
-			break;
-		case 'T':
-			repeat = you.line;
-			c = 'k';
-			break;
-		case 'K':
-		case 'E':
-			repeat = you.line - money.line;
-			c = 'k';
-			break;
-		case 'P':
-			repeat = ccnt - 1 - you.col;
-			c = 'l';
-			break;
-		case 'L':
-		case 'F':
-			repeat = money.col - you.col;
-			c = 'l';
-			break;
-		case 'B':
-			repeat = lcnt - 1 - you.line;
-			c = 'j';
-			break;
-		case 'J':
-		case 'C':
-			repeat = money.line - you.line;
-			c = 'j';
-			break;
+			case CTRL('z'):
+				suspend();
+				continue;
+			case EOT:
+			case 'x':
+			case 0177:	/* del or end of file */
+				endwin();
+				length(moves);
+				logit("quit");
+				exit(0);
+			case CTRL('l'):
+				setup();
+				winnings(cashvalue);
+				continue;
+			case 'p':
+			case 'd':
+				snap();
+				continue;
+			case 'w':
+				spacewarp(0);
+				continue;
+			case 'A':
+				repeat = you.col;
+				c = 'h';
+				break;
+			case 'H':
+			case 'S':
+				repeat = you.col - money.col;
+				c = 'h';
+				break;
+			case 'T':
+				repeat = you.line;
+				c = 'k';
+				break;
+			case 'K':
+			case 'E':
+				repeat = you.line - money.line;
+				c = 'k';
+				break;
+			case 'P':
+				repeat = ccnt - 1 - you.col;
+				c = 'l';
+				break;
+			case 'L':
+			case 'F':
+				repeat = money.col - you.col;
+				c = 'l';
+				break;
+			case 'B':
+				repeat = lcnt - 1 - you.line;
+				c = 'j';
+				break;
+			case 'J':
+			case 'C':
+				repeat = money.line - you.line;
+				c = 'j';
+				break;
 		}
+
 		for (k = 1; k <= repeat; k++) {
 			moves++;
+
 			switch (c) {
-			case 's':
-			case 'h':
+				case 's':
+				case 'h':
 #ifdef KEY_LEFT
-			case KEY_LEFT:
+				case KEY_LEFT:
 #endif
-			case '\b':
-				if (you.col > 0) {
-					if ((fast) || (k == 1))
-						pchar(&you, ' ');
-					you.col--;
-					if ((fast) || (k == repeat) ||
-					    (you.col == 0))
-						pchar(&you, ME);
-				}
-				break;
-			case 'f':
-			case 'l':
+				case '\b':
+					if (you.col > 0) {
+						if ((fast) || (k == 1))
+							pchar(&you, ' ');
+
+						you.col--;
+
+						if ((fast) || (k == repeat) || (you.col == 0))
+							pchar(&you, ME);
+					}
+
+					break;
+				case 'f':
+				case 'l':
 #ifdef KEY_RIGHT
-			case KEY_RIGHT:
+				case KEY_RIGHT:
 #endif
-			case ' ':
-				if (you.col < ccnt - 1) {
-					if ((fast) || (k == 1))
-						pchar(&you, ' ');
-					you.col++;
-					if ((fast) || (k == repeat) ||
-					    (you.col == ccnt - 1))
-						pchar(&you, ME);
-				}
-				break;
-			case CTRL('p'):
-			case 'e':
-			case 'k':
+				case ' ':
+					if (you.col < ccnt - 1) {
+
+						if ((fast) || (k == 1))
+							pchar(&you, ' ');
+
+						you.col++;
+
+						if ((fast) || (k == repeat) || (you.col == ccnt - 1))
+							pchar(&you, ME);
+					}
+
+					break;
+				case CTRL('p'):
+				case 'e':
+				case 'k':
 #ifdef KEY_UP
-			case KEY_UP:
+				case KEY_UP:
 #endif
-			case 'i':
-				if (you.line > 0) {
-					if ((fast) || (k == 1))
-						pchar(&you, ' ');
-					you.line--;
-					if ((fast) || (k == repeat) ||
-					    (you.line == 0))
-						pchar(&you, ME);
-				}
-				break;
-			case CTRL('n'):
-			case 'c':
-			case 'j':
+				case 'i':
+					if (you.line > 0) {
+						if ((fast) || (k == 1))
+							pchar(&you, ' ');
+
+						you.line--;
+
+						if ((fast) || (k == repeat) || (you.line == 0))
+							pchar(&you, ME);
+					}
+
+					break;
+				case CTRL('n'):
+				case 'c':
+				case 'j':
 #ifdef KEY_DOWN
-			case KEY_DOWN:
+				case KEY_DOWN:
 #endif
-			case LF:
-			case 'm':
-				if (you.line + 1 < lcnt) {
-					if ((fast) || (k == 1))
-						pchar(&you, ' ');
-					you.line++;
-					if ((fast) || (k == repeat) ||
-					    (you.line == lcnt - 1))
-						pchar(&you, ME);
-				}
-				break;
+				case LF:
+				case 'm':
+					if (you.line + 1 < lcnt) {
+						if ((fast) || (k == 1))
+							pchar(&you, ' ');
+
+						you.line++;
+
+						if ((fast) || (k == repeat) || (you.line == lcnt - 1))
+							pchar(&you, ME);
+					}
+
+					break;
 			}
 
 			if (same(&you, &money)) {
 				loot += 25;
+
 				if (k < repeat)
 					pchar(&you, ' ');
+
 				do {
 					snrand(&money);
 				} while ((money.col == finish.col &&
@@ -390,10 +409,12 @@ void mainloop() {
 				    (money.col < 5 && money.line == 0) ||
 				    (money.col == you.col &&
 					money.line == you.line));
+
 				pchar(&money, TREASURE);
 				winnings(cashvalue);
 				continue;
 			}
+
 			if (same(&you, &finish)) {
 				win(&finish);
 				flushi();
@@ -405,6 +426,7 @@ void mainloop() {
 				length(moves);
 				exit(0);
 			}
+
 			if (pushsnake())
 				break;
 		}
@@ -495,10 +517,12 @@ int post(int iscore, int flag) {
 
 		return (1);
 	}
+
 	if (rawscores < 0) {
 		/* Error reported earlier */
 		return (1);
 	}
+
 	/* Figure out what happened in the past */
 	read(rawscores, &allbscore, sizeof(short));
 	read(rawscores, &allbwho, sizeof(short));
@@ -537,11 +561,6 @@ int post(int iscore, int flag) {
 	return (1);
 }
 
-/*
- * Flush typeahead to keep from buffering a bunch of chars and then
- * overshooting.  This loses horribly at 9600 baud, but works nicely
- * if the terminal gets behind.
- */
 void flushi() {
 	tcflush(0, TCIFLUSH);
 }
@@ -902,11 +921,9 @@ int pushsnake() {
 			endwin();
 
 			if (loot >= penalty) {
-				printf("\nYou and your $%d have been eaten\n",
-				    cashvalue);
+				printf("\nYou and your $%d have been eaten\n", cashvalue);
 			} else {
-				printf("\nThe snake ate you.  You owe $%d.\n",
-				    -cashvalue);
+				printf("\nThe snake ate you.  You owe $%d.\n", -cashvalue);
 			}
 
 			logit("eaten");
@@ -945,8 +962,10 @@ int chk(const struct point* sp) {
 
 	if ((sp->col < 4) && (sp->line == 0)) {
 		winnings(cashvalue);
+
 		if ((you.line == 0) && (you.col < 4))
 			pchar(&you, ME);
+
 		return (5);
 	}
 

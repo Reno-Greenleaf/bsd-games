@@ -13,12 +13,32 @@ void chase(struct point*, struct point*);
  * the function erases it, revealing whatever is beneath.
  */
 int chk(const struct point*);
+
+/**
+ * Draw the level/box/room/location.
+ * Drawing it is more advanced than other stuff,
+ * thus the dedicated function.
+ */
 void drawbox(void);
+
+/**
+ * Flush typeahead to keep from buffering a bunch of chars and then
+ * overshooting.  This loses horribly at 9600 baud, but works nicely
+ * if the terminal gets behind.
+ */
 void flushi(void);
 void length(int);
 void logit(const char*);
+
+/**
+ * Entry point for the application.
+ */
 int main(int, char**);
 void mainloop(void) __attribute__((__noreturn__));
+
+/**
+ * Shortcut to update a point with new coordinates.
+ */
 struct point* point(struct point*, int, int);
 int post(int, int);
 int pushsnake(void);
