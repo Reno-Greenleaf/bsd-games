@@ -74,7 +74,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 #include "pathnames.h"
 #include "snake.h"
 
-#define cashvalue chunk*(loot-penalty)/25
+#define cashvalue chunk * (loot-penalty) / 25
 
 #define	same(s1, s2) ((s1)->line == (s2)->line && (s1)->col == (s2)->col)
 
@@ -115,6 +115,7 @@ int	chunk; // amount of money given at a time
 int main(int argc, char** argv) {
 	int     ch, i;
 	time_t tv;
+	struct point boundaries;
 
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
@@ -143,10 +144,10 @@ int main(int argc, char** argv) {
 			break;
 #endif
 		case 'w':	/* width */
-			ccnt = atoi(optarg);
+			boundaries.col = ccnt = atoi(optarg);
 			break;
 		case 'l':	/* length */
-			lcnt = atoi(optarg);
+			boundaries.line = lcnt = atoi(optarg);
 			break;
 		case 't':
 			fast = 0;
@@ -171,10 +172,10 @@ int main(int argc, char** argv) {
 #endif
 
 	if (!lcnt || lcnt > LINES - 2)
-		lcnt = LINES - 2;
+		boundaries.line = lcnt = LINES - 2;
 
 	if (!ccnt || ccnt > COLS - 2)
-		ccnt = COLS - 2;
+		boundaries.col = ccnt = COLS - 2;
 
 	i = MIN(lcnt, ccnt);
 
@@ -214,8 +215,8 @@ int main(int argc, char** argv) {
 	for (i = 1; i < 6; i++)
 		chase(&snake[i], &snake[i - 1]);
 
-	setup();
-	mainloop();
+	setup(boundaries);
+	mainloop(boundaries);
 	/* NOTREACHED */
 	return (0);
 }
@@ -227,7 +228,7 @@ struct point* point(struct point* ps, int x, int y) {
 }
 
 /* Main command loop */
-void mainloop() {
+void mainloop(struct point level) {
 	int k;
 	int repeat = 1;
 	int	lastc = 0;
@@ -270,7 +271,7 @@ void mainloop() {
 				logit("quit");
 				exit(0);
 			case CTRL('l'):
-				setup();
+				setup(level);
 				winnings(cashvalue);
 				continue;
 			case 'p':
@@ -278,7 +279,7 @@ void mainloop() {
 				snap();
 				continue;
 			case 'w':
-				spacewarp(0);
+				spacewarp(0, level);
 				continue;
 			case 'A':
 				repeat = you.col;
@@ -427,13 +428,13 @@ void mainloop() {
 				exit(0);
 			}
 
-			if (pushsnake())
+			if (pushsnake(level))
 				break;
 		}
 	}
 }
 
-void setup() {
+void setup(struct point box) {
 	int     i;
 
 	erase();
@@ -445,21 +446,21 @@ void setup() {
 		pchar(&snake[i], SNAKETAIL);
 
 	pchar(&snake[0], SNAKEHEAD);
-	drawbox();
+	drawbox(box);
 	refresh();
 }
 
-void drawbox() {
+void drawbox(struct point box) {
 	int i;
 
-	for (i = 1; i <= ccnt; i++) {
+	for (i = 1; i <= box.col; i++) {
 		mvaddch(0, i, '-');
-		mvaddch(lcnt + 1, i, '-');
+		mvaddch(box.line + 1, i, '-');
 	}
 
-	for (i = 0; i <= lcnt + 1; i++) {
+	for (i = 0; i <= box.line + 1; i++) {
 		mvaddch(i, 0, '|');
-		mvaddch(i, ccnt + 1, '|');
+		mvaddch(i, box.col + 1, '|');
 	}
 }
 
@@ -650,7 +651,7 @@ void chase(struct point* np, struct point* sp) {
 	point(np, sp->col + mx[w], sp->line + my[w]);
 }
 
-void spacewarp(int w) {
+void spacewarp(int w, struct point bounds) {
 	struct point p;
 	int j;
 	const char* str;
@@ -682,7 +683,7 @@ void spacewarp(int w) {
 		delay(10);
 	}
 
-	setup();
+	setup(bounds);
 	winnings(cashvalue);
 }
 
@@ -872,7 +873,7 @@ void win(const struct point* ps) {
 	}
 }
 
-int pushsnake() {
+int pushsnake(struct point bounds) {
 	int i, bonus;
 	int issame = 0;
 	struct point tmp;
@@ -911,7 +912,7 @@ int pushsnake() {
 			delay(30);
 
 			if (bonus == i) {
-				spacewarp(1);
+				spacewarp(1, bounds);
 				logit("bonus");
 				flushi();
 				return (1);

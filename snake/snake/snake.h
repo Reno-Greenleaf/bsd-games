@@ -19,7 +19,7 @@ int chk(const struct point*);
  * Drawing it is more advanced than other stuff,
  * thus the dedicated function.
  */
-void drawbox(void);
+void drawbox(struct point);
 
 /**
  * Flush typeahead to keep from buffering a bunch of chars and then
@@ -34,24 +34,24 @@ void logit(const char*);
  * Entry point for the application.
  */
 int main(int, char**);
-void mainloop(void) __attribute__((__noreturn__));
+void mainloop(struct point) __attribute__((__noreturn__));
 
 /**
  * Shortcut to update a point with new coordinates.
  */
 struct point* point(struct point*, int, int);
 int post(int, int);
-int pushsnake(void);
+int pushsnake(struct point);
 void right(const struct point*);
 
 /**
  * Redraw (almost) everything.
  * May come in handy when redrawing individual points isn't enough.
  */
-void setup(void);
+void setup(struct point);
 void snap(void);
 void snrand(struct point*);
-void spacewarp(int);
+void spacewarp(int, struct point);
 void stop(int) __attribute__((__noreturn__));
 int stretch(const struct point*);
 void surround(struct point*);
