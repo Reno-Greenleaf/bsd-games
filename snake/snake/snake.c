@@ -78,7 +78,7 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 
 #define	same(s1, s2) ((s1)->line == (s2)->line && (s1)->col == (s2)->col)
 
-#define PENALTY 10		/* % penalty for invoking spacewarp	 */
+#define PENALTY 10 // % penalty for invoking spacewarp
 
 #define EOT	'\004'
 #define LF '\n'
@@ -218,13 +218,13 @@ int main(int argc, char** argv) {
 	setup(boundaries);
 	mainloop(boundaries);
 	/* NOTREACHED */
-	return (0);
+	return 0;
 }
 
 struct point* point(struct point* ps, int x, int y) {
 	ps->col = x;
 	ps->line = y;
-	return (ps);
+	return ps;
 }
 
 /* Main command loop */
@@ -516,12 +516,12 @@ int post(int iscore, int flag) {
 		if (flag)
 			printf("No saved scores for uid %d.\n", uid);
 
-		return (1);
+		return 1;
 	}
 
 	if (rawscores < 0) {
 		/* Error reported earlier */
-		return (1);
+		return 1;
 	}
 
 	/* Figure out what happened in the past */
@@ -559,7 +559,7 @@ int post(int iscore, int flag) {
 		printf("The highest is %s with $%d\n", p->pw_name, allbscore);
 
 	lseek(rawscores, 0, SEEK_SET);
-	return (1);
+	return 1;
 }
 
 void flushi() {
@@ -757,7 +757,7 @@ int stretch(const struct point* ps) {
 				chk(&p);
 		}
 
-		return (1);
+		return 1;
 	} else
 		if ((abs(ps->line - you.line) < (lcnt/7))
 		    && (you.col != ps->col)) {
@@ -783,10 +783,10 @@ int stretch(const struct point* ps) {
 					chk(&p);
 			}
 
-			return (1);
+			return 1;
 		}
 
-	return (0);
+	return 0;
 }
 
 void surround(struct point* ps) {
@@ -915,7 +915,7 @@ int pushsnake(struct point bounds) {
 				spacewarp(1, bounds);
 				logit("bonus");
 				flushi();
-				return (1);
+				return 1;
 			}
 
 			flushi();
@@ -933,7 +933,7 @@ int pushsnake(struct point bounds) {
 		}
 	}
 
-	return (0);
+	return 0;
 }
 
 int chk(const struct point* sp) {
@@ -941,23 +941,23 @@ int chk(const struct point* sp) {
 
 	if (same(sp, &money)) {
 		pchar(sp, TREASURE);
-		return (2);
+		return 2;
 	}
 
 	if (same(sp, &finish)) {
 		pchar(sp, GOAL);
-		return (3);
+		return 3;
 	}
 
 	if (same(sp, &snake[0])) {
 		pchar(sp, SNAKEHEAD);
-		return (4);
+		return 4;
 	}
 
 	for (j = 1; j < 6; j++) {
 		if (same(sp, &snake[j])) {
 			pchar(sp, SNAKETAIL);
-			return (4);
+			return 4;
 		}
 	}
 
@@ -967,16 +967,16 @@ int chk(const struct point* sp) {
 		if ((you.line == 0) && (you.col < 4))
 			pchar(&you, ME);
 
-		return (5);
+		return 5;
 	}
 
 	if (same(sp, &you)) {
 		pchar(sp, ME);
-		return (1);
+		return 1;
 	}
 
 	pchar(sp, ' ');
-	return (0);
+	return 0;
 }
 
 void winnings(int won) {
