@@ -50,13 +50,28 @@ void right(const struct point*);
  */
 void setup(struct point);
 void snap(void);
+
+/**
+ * Move given point to random coordinates.
+ * Pretty much all objects/creatures are placed randomly within a level.
+ */
 void snrand(struct point*);
+
+/**
+ * Move main character to a random position (with a penalty).
+ * It's useful for escaping snakes clutches.
+ */
 void spacewarp(int, struct point);
 void stop(int) __attribute__((__noreturn__));
 int stretch(const struct point*);
 void surround(struct point*);
 void suspend(void);
 void win(const struct point*);
+
+/**
+ * Score is rendered differently from other objects/creatures.
+ * Thus the dedicated function.
+ */
 void winnings(int);
 
 #endif // end of include guard

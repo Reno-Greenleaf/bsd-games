@@ -494,6 +494,7 @@ void snrand(struct point* sp) {
 
 		break;
 	}
+
 	*sp = p;
 }
 
