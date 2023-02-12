@@ -505,11 +505,6 @@ int post(int iscore, int flag) {
 	short allbwho = 0, allbscore = 0;
 	struct passwd* p;
 
-	/* I want to printf() the scores for terms that clear on cook(),
-	 * but this routine also gets called with flag == 0 to see if
-	 * the snake should wink.  If (flag) then we're at game end and
-	 * can printf.
-	 */
 	/*
 	 * Neg uid, 0, and 1 cannot have scores recorded.
 	 */

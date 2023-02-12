@@ -40,9 +40,15 @@ void mainloop(struct point) __attribute__((__noreturn__));
  * Shortcut to update a point with new coordinates.
  */
 struct point* point(struct point*, int, int);
+
+/**
+ * Determine if previous highest score was bitten.
+ * It makes sense to call the function at the end,
+ * when current score is final.
+ * If second argument (flag) is set, write more details.
+ */
 int post(int, int);
 int pushsnake(struct point);
-void right(const struct point*);
 
 /**
  * Redraw (almost) everything.
@@ -64,8 +70,18 @@ void snrand(struct point*);
 void spacewarp(int, struct point);
 void stop(int) __attribute__((__noreturn__));
 int stretch(const struct point*);
+
+/**
+ * Play game over (loss) animation.
+ * Makes things fancy.
+ */
 void surround(struct point*);
 void suspend(void);
+
+/**
+ * Play game over (victory) animation.
+ * Makes things fancy.
+ */
 void win(const struct point*);
 
 /**
