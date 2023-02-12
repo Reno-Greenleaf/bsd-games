@@ -700,13 +700,12 @@ void snap() {
 		mvaddch(you.line + 1, ccnt, ')');
 	}
 #endif
-	if (!stretch(&money))
-		if (!stretch(&finish)) {
-			pchar(&you, '?');
-			refresh();
-			delay(10);
-			pchar(&you, ME);
-		}
+	if (!stretch(&money) && !stretch(&finish)) {
+		pchar(&you, '?');
+		refresh();
+		delay(10);
+		pchar(&you, ME);
+	}
 #if 0
 	if (you.line < 3) {
 		point(&p, you.col, 0);
