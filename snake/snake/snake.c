@@ -109,13 +109,12 @@ int fast = 1;
 int rawscores;
 FILE *logfile;
 
-int	lcnt, ccnt;	// user's idea of screen size
 int	chunk; // amount of money given at a time
 
 int main(int argc, char** argv) {
 	int     ch, i;
 	time_t tv;
-	struct point boundaries;
+	struct point boundaries = {0, 0};
 
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
@@ -144,10 +143,10 @@ int main(int argc, char** argv) {
 			break;
 #endif
 		case 'w':	/* width */
-			boundaries.col = ccnt = atoi(optarg);
+			boundaries.col = atoi(optarg);
 			break;
 		case 'l':	/* length */
-			boundaries.line = lcnt = atoi(optarg);
+			boundaries.line = atoi(optarg);
 			break;
 		case 't':
 			fast = 0;
@@ -171,13 +170,13 @@ int main(int argc, char** argv) {
 	keypad(stdscr, TRUE);
 #endif
 
-	if (!lcnt || lcnt > LINES - 2)
-		boundaries.line = lcnt = LINES - 2;
+	if (boundaries.line == 0 || boundaries.line > LINES - 2)
+		boundaries.line = LINES - 2;
 
-	if (!ccnt || ccnt > COLS - 2)
-		boundaries.col = ccnt = COLS - 2;
+	if (boundaries.col == 0 || boundaries.col > COLS - 2)
+		boundaries.col = COLS - 2;
 
-	i = MIN(lcnt, ccnt);
+	i = MIN(boundaries.line, boundaries.col);
 
 	if (i < 4) {
 		endwin();
@@ -207,13 +206,13 @@ int main(int argc, char** argv) {
 	i += 2;
 	chunk = (675.0 / (i + 6)) + 2.5;	/* min screen edge */
 	signal(SIGINT, stop);
-	snrand(&finish);
-	snrand(&you);
-	snrand(&money);
-	snrand(&snake[0]);
+	snrand(&finish, boundaries);
+	snrand(&you, boundaries);
+	snrand(&money, boundaries);
+	snrand(&snake[0], boundaries);
 
 	for (i = 1; i < 6; i++)
-		chase(&snake[i], &snake[i - 1]);
+		chase(&snake[i], &snake[i - 1], boundaries);
 
 	setup(boundaries);
 	mainloop(boundaries);
@@ -234,7 +233,7 @@ void mainloop(struct point level) {
 	int	lastc = 0;
 
 	for (;;) {
-		int     c;
+		int c;
 
 		/* Highlight you, not left & above */
 		move(you.line + 1, you.col + 1);
@@ -268,7 +267,7 @@ void mainloop(struct point level) {
 			case 0177:	/* del or end of file */
 				endwin();
 				length(moves);
-				logit("quit");
+				logit("quit", level);
 				exit(0);
 			case CTRL('l'):
 				setup(level);
@@ -276,7 +275,7 @@ void mainloop(struct point level) {
 				continue;
 			case 'p':
 			case 'd':
-				snap();
+				snap(level);
 				continue;
 			case 'w':
 				spacewarp(0, level);
@@ -300,7 +299,7 @@ void mainloop(struct point level) {
 				c = 'k';
 				break;
 			case 'P':
-				repeat = ccnt - 1 - you.col;
+				repeat = level.col - 1 - you.col;
 				c = 'l';
 				break;
 			case 'L':
@@ -309,7 +308,7 @@ void mainloop(struct point level) {
 				c = 'l';
 				break;
 			case 'B':
-				repeat = lcnt - 1 - you.line;
+				repeat = level.line - 1 - you.line;
 				c = 'j';
 				break;
 			case 'J':
@@ -346,14 +345,13 @@ void mainloop(struct point level) {
 				case KEY_RIGHT:
 #endif
 				case ' ':
-					if (you.col < ccnt - 1) {
-
+					if (you.col < level.col - 1) {
 						if ((fast) || (k == 1))
 							pchar(&you, ' ');
 
 						you.col++;
 
-						if ((fast) || (k == repeat) || (you.col == ccnt - 1))
+						if ((fast) || (k == repeat) || (you.col == level.col - 1))
 							pchar(&you, ME);
 					}
 
@@ -384,13 +382,13 @@ void mainloop(struct point level) {
 #endif
 				case LF:
 				case 'm':
-					if (you.line + 1 < lcnt) {
+					if (you.line + 1 < level.line) {
 						if ((fast) || (k == 1))
 							pchar(&you, ' ');
 
 						you.line++;
 
-						if ((fast) || (k == repeat) || (you.line == lcnt - 1))
+						if ((fast) || (k == repeat) || (you.line == level.line - 1))
 							pchar(&you, ME);
 					}
 
@@ -404,7 +402,7 @@ void mainloop(struct point level) {
 					pchar(&you, ' ');
 
 				do {
-					snrand(&money);
+					snrand(&money, level);
 				} while ((money.col == finish.col &&
 					money.line == finish.line) ||
 				    (money.col < 5 && money.line == 0) ||
@@ -422,7 +420,7 @@ void mainloop(struct point level) {
 				endwin();
 				printf("You have won with $%d.\n", cashvalue);
 				fflush(stdout);
-				logit("won");
+				logit("won", level);
 				post(cashvalue, 1);
 				length(moves);
 				exit(0);
@@ -464,13 +462,13 @@ void drawbox(struct point box) {
 	}
 }
 
-void snrand(struct point* sp) {
+void snrand(struct point* sp, struct point cave) {
 	struct point p;
 	int i;
 
 	for (;;) {
-		p.col = random() % ccnt;
-		p.line = random() % lcnt;
+		p.col = random() % cave.col;
+		p.line = random() % cave.line;
 
 		/* make sure it's not on top of something else */
 		if (p.line == 0 && p.col < 5)
@@ -573,7 +571,7 @@ const float absv[8] = {
 };
 int oldw = 0;
 
-void chase(struct point* np, struct point* sp) {
+void chase(struct point* np, struct point* sp, struct point cave) {
 	/* this algorithm has bugs; otherwise the snake would get too good */
 	struct point d;
 	int w, i, wt[8];
@@ -602,7 +600,7 @@ void chase(struct point* np, struct point* sp) {
 		point(&d, sp->col + mx[i], sp->line + my[i]);
 		wt[i] = 0;
 
-		if (d.col < 0 || d.col >= ccnt || d.line < 0 || d.line >= lcnt)
+		if (d.col < 0 || d.col >= cave.col || d.line < 0 || d.line >= cave.line)
 			continue;
 
 		/*
@@ -652,7 +650,7 @@ void spacewarp(int w, struct point bounds) {
 	int j;
 	const char* str;
 
-	snrand(&you);
+	snrand(&you, bounds);
 	point(&p, COLS / 2 - 8, LINES / 2 - 1);
 
 	if (p.col < 0)
@@ -683,7 +681,7 @@ void spacewarp(int w, struct point bounds) {
 	winnings(cashvalue);
 }
 
-void snap() {
+void snap(struct point cave) {
 #if 0 /* This code doesn't really make sense.  */
 	struct point p;
 
@@ -700,7 +698,7 @@ void snap() {
 		mvaddch(you.line + 1, ccnt, ')');
 	}
 #endif
-	if (!stretch(&money) && !stretch(&finish)) {
+	if (!stretch(&money, cave) && !stretch(&finish, cave)) {
 		pchar(&you, '?');
 		refresh();
 		delay(10);
@@ -727,11 +725,11 @@ void snap() {
 	refresh();
 }
 
-int stretch(const struct point* ps) {
+int stretch(const struct point* ps, struct point dungeon) {
 	struct point p;
 	point(&p, you.col, you.line);
 
-	if ((abs(ps->col - you.col) < (ccnt / 12)) && (you.line != ps->line)) {
+	if ((abs(ps->col - you.col) < (dungeon.col / 12)) && (you.line != ps->line)) {
 		if (you.line < ps->line) {
 			for (p.line = you.line + 1; p.line <= ps->line; p.line++)
 				pchar(&p, 'v');
@@ -754,7 +752,7 @@ int stretch(const struct point* ps) {
 
 		return 1;
 	} else
-		if ((abs(ps->line - you.line) < (lcnt/7))
+		if ((abs(ps->line - you.line) < (dungeon.line / 7))
 		    && (you.col != ps->col)) {
 			p.line = you.line;
 
@@ -893,7 +891,7 @@ int pushsnake(struct point bounds) {
 	for (i = 4; i >= 0; i--)
 		snake[i + 1] = snake[i];
 
-	chase(&snake[0], &snake[1]);
+	chase(&snake[0], &snake[1], bounds);
 	pchar(&snake[1], SNAKETAIL);
 	pchar(&snake[0], SNAKEHEAD);
 
@@ -902,13 +900,13 @@ int pushsnake(struct point bounds) {
 			surround(&you);
 			i = (cashvalue) % 10;
 			bonus = ((random() >> 8) & 0377) % 10;
-			mvprintw(lcnt + 1, 0, "%d\n", bonus);
+			mvprintw(bounds.line + 1, 0, "%d\n", bonus);
 			refresh();
 			delay(30);
 
 			if (bonus == i) {
 				spacewarp(1, bounds);
-				logit("bonus");
+				logit("bonus", bounds);
 				flushi();
 				return 1;
 			}
@@ -922,7 +920,7 @@ int pushsnake(struct point bounds) {
 				printf("\nThe snake ate you.  You owe $%d.\n", -cashvalue);
 			}
 
-			logit("eaten");
+			logit("eaten", bounds);
 			length(moves);
 			exit(0);
 		}
@@ -998,7 +996,7 @@ void length(int num) {
 	printf("You made %d moves.\n", num);
 }
 
-void logit(const char* msg) {
+void logit(const char* msg, struct point bounds) {
 	time_t  t;
 
 	if (logfile != NULL) {
@@ -1008,8 +1006,8 @@ void logit(const char* msg) {
 			"%s $%d %dx%d %s %s",
 			getlogin(),
 			cashvalue,
-			lcnt,
-			ccnt,
+			bounds.line,
+			bounds.col,
 			msg,
 			ctime(&t)
 		);

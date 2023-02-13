@@ -5,7 +5,7 @@ struct point {
     int col, line;
 };
 
-void chase(struct point*, struct point*);
+void chase(struct point*, struct point*, struct point);
 
 /**
  * Restore a point.
@@ -28,7 +28,7 @@ void drawbox(struct point);
  */
 void flushi(void);
 void length(int);
-void logit(const char*);
+void logit(const char*, struct point);
 
 /**
  * Entry point for the application.
@@ -55,13 +55,13 @@ int pushsnake(struct point);
  * May come in handy when redrawing individual points isn't enough.
  */
 void setup(struct point);
-void snap(void);
+void snap(struct point);
 
 /**
  * Move given point to random coordinates.
  * Pretty much all objects/creatures are placed randomly within a level.
  */
-void snrand(struct point*);
+void snrand(struct point*, struct point);
 
 /**
  * Move main character to a random position (with a penalty).
@@ -69,7 +69,7 @@ void snrand(struct point*);
  */
 void spacewarp(int, struct point);
 void stop(int) __attribute__((__noreturn__));
-int stretch(const struct point*);
+int stretch(const struct point*, struct point);
 
 /**
  * Play game over (loss) animation.
