@@ -31,5 +31,5 @@
  *	@(#)pathnames.h	8.1 (Berkeley) 5/31/93
  */
 
-#define	_PATH_RAWSCORES	"@snake_rawscorefile@"
-#define	_PATH_LOGFILE	"@snake_scorefile@"
+#define	_PATH_RAWSCORES	"@install_prefix@@snake_rawscorefile@"
+#define	_PATH_LOGFILE	"@install_prefix@@snake_scorefile@"
