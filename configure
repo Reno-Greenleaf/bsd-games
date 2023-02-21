@@ -34,9 +34,7 @@
 # GNUmakefile.
 
 # Allow defaults to be given by a script
-if [ -e ./config.params ]; then
-    . ./config.params
-fi
+test -f "$1" && . "$1"
 
 subst_vars=srcdir
 

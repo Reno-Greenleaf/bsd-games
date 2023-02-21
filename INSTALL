@@ -96,6 +96,9 @@ Building and installation
     FSSTND 1.2, or a newer FHS, or wish to install into /usr/local,
     check the paths given and make changes as appropriate.
 
+    File with predefined configuration parameters may be specified.
+    E. g. "./configure ./config.params"
+
 3.  Type "make".  You can probably ignore compiler warnings, although
     most should be fixed in this release.  If you are building on a 64
     bit architecture, you might want to look over the warnings and let
