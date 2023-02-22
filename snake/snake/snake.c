@@ -99,7 +99,6 @@ __RCSID("$NetBSD: snake.c,v 1.20 2004/02/08 00:33:31 jsm Exp $");
 
 struct point you;
 struct point money;
-struct point finish;
 struct point snake[6];
 
 int loot, penalty;
@@ -112,9 +111,10 @@ FILE *logfile;
 int	chunk; // amount of money given at a time
 
 int main(int argc, char** argv) {
-	int     ch, i;
+	int ch, i;
 	time_t tv;
 	struct point boundaries = {0, 0};
+	struct point way_out = {0, 0};
 
 	/* Open score files then revoke setgid privileges */
 	rawscores = open(_PATH_RAWSCORES, O_RDWR|O_CREAT, 0664);
@@ -206,16 +206,16 @@ int main(int argc, char** argv) {
 	i += 2;
 	chunk = (675.0 / (i + 6)) + 2.5;	/* min screen edge */
 	signal(SIGINT, stop);
-	snrand(&finish, boundaries);
-	snrand(&you, boundaries);
-	snrand(&money, boundaries);
-	snrand(&snake[0], boundaries);
+	snrand(&way_out, boundaries, way_out);
+	snrand(&you, boundaries, way_out);
+	snrand(&money, boundaries, way_out);
+	snrand(&snake[0], boundaries, way_out);
 
 	for (i = 1; i < 6; i++)
-		chase(&snake[i], &snake[i - 1], boundaries);
+		chase(&snake[i], &snake[i - 1], boundaries, way_out);
 
-	setup(boundaries);
-	mainloop(boundaries);
+	setup(boundaries, way_out);
+	mainloop(boundaries, way_out);
 	/* NOTREACHED */
 	return 0;
 }
@@ -227,7 +227,7 @@ struct point* point(struct point* ps, int x, int y) {
 }
 
 /* Main command loop */
-void mainloop(struct point level) {
+void mainloop(struct point level, struct point escape) {
 	int k;
 	int repeat = 1;
 	int	lastc = 0;
@@ -270,15 +270,15 @@ void mainloop(struct point level) {
 				logit("quit", level);
 				exit(0);
 			case CTRL('l'):
-				setup(level);
+				setup(level, escape);
 				winnings(cashvalue);
 				continue;
 			case 'p':
 			case 'd':
-				snap(level);
+				snap(level, escape);
 				continue;
 			case 'w':
-				spacewarp(0, level);
+				spacewarp(0, level, escape);
 				continue;
 			case 'A':
 				repeat = you.col;
@@ -402,9 +402,9 @@ void mainloop(struct point level) {
 					pchar(&you, ' ');
 
 				do {
-					snrand(&money, level);
-				} while ((money.col == finish.col &&
-					money.line == finish.line) ||
+					snrand(&money, level, escape);
+				} while ((money.col == escape.col &&
+					money.line == escape.line) ||
 				    (money.col < 5 && money.line == 0) ||
 				    (money.col == you.col &&
 					money.line == you.line));
@@ -414,8 +414,8 @@ void mainloop(struct point level) {
 				continue;
 			}
 
-			if (same(&you, &finish)) {
-				win(&finish);
+			if (same(&you, &escape)) {
+				win(&escape);
 				flushi();
 				endwin();
 				printf("You have won with $%d.\n", cashvalue);
@@ -426,18 +426,18 @@ void mainloop(struct point level) {
 				exit(0);
 			}
 
-			if (pushsnake(level))
+			if (pushsnake(level, escape))
 				break;
 		}
 	}
 }
 
-void setup(struct point box) {
+void setup(struct point box, struct point door) {
 	int     i;
 
 	erase();
 	pchar(&you, ME);
-	pchar(&finish, GOAL);
+	pchar(&door, GOAL);
 	pchar(&money, TREASURE);
 
 	for (i = 1; i < 6; i++)
@@ -462,7 +462,7 @@ void drawbox(struct point box) {
 	}
 }
 
-void snrand(struct point* sp, struct point cave) {
+void snrand(struct point* sp, struct point cave, struct point way_up) {
 	struct point p;
 	int i;
 
@@ -480,7 +480,7 @@ void snrand(struct point* sp, struct point cave) {
 		if (same(&p, &money))
 			continue;
 
-		if (same(&p, &finish))
+		if (same(&p, &way_up))
 			continue;
 
 		for (i = 0; i < 6; i++)
@@ -571,7 +571,7 @@ const float absv[8] = {
 };
 int oldw = 0;
 
-void chase(struct point* np, struct point* sp, struct point cave) {
+void chase(struct point* np, struct point* sp, struct point cave, struct point way_up) {
 	/* this algorithm has bugs; otherwise the snake would get too good */
 	struct point d;
 	int w, i, wt[8];
@@ -613,7 +613,7 @@ void chase(struct point* np, struct point* sp, struct point cave) {
 		if (same(&d, &money))
 			continue;
 
-		if (same(&d, &finish))
+		if (same(&d, &way_up))
 			continue;
 
 		wt[i] = i == w ? loot / 10 : 1;
@@ -645,12 +645,12 @@ void chase(struct point* np, struct point* sp, struct point cave) {
 	point(np, sp->col + mx[w], sp->line + my[w]);
 }
 
-void spacewarp(int w, struct point bounds) {
+void spacewarp(int w, struct point bounds, struct point manhole) {
 	struct point p;
 	int j;
 	const char* str;
 
-	snrand(&you, bounds);
+	snrand(&you, bounds, manhole);
 	point(&p, COLS / 2 - 8, LINES / 2 - 1);
 
 	if (p.col < 0)
@@ -677,11 +677,11 @@ void spacewarp(int w, struct point bounds) {
 		delay(10);
 	}
 
-	setup(bounds);
+	setup(bounds, manhole);
 	winnings(cashvalue);
 }
 
-void snap(struct point cave) {
+void snap(struct point cave, struct point door) {
 #if 0 /* This code doesn't really make sense.  */
 	struct point p;
 
@@ -698,7 +698,7 @@ void snap(struct point cave) {
 		mvaddch(you.line + 1, ccnt, ')');
 	}
 #endif
-	if (!stretch(&money, cave) && !stretch(&finish, cave)) {
+	if (!stretch(&money, cave, door) && !stretch(&door, cave, door)) {
 		pchar(&you, '?');
 		refresh();
 		delay(10);
@@ -725,7 +725,7 @@ void snap(struct point cave) {
 	refresh();
 }
 
-int stretch(const struct point* ps, struct point dungeon) {
+int stretch(const struct point* ps, struct point dungeon, struct point door) {
 	struct point p;
 	point(&p, you.col, you.line);
 
@@ -738,7 +738,7 @@ int stretch(const struct point* ps, struct point dungeon) {
 			delay(10);
 
 			for (; p.line > you.line; p.line--)
-				chk(&p);
+				chk(&p, door);
 		} else {
 			for (p.line = you.line - 1; p.line >= ps->line; p.line--)
 				pchar(&p, '^');
@@ -747,7 +747,7 @@ int stretch(const struct point* ps, struct point dungeon) {
 			delay(10);
 
 			for (; p.line < you.line; p.line++)
-				chk(&p);
+				chk(&p, door);
 		}
 
 		return 1;
@@ -764,7 +764,7 @@ int stretch(const struct point* ps, struct point dungeon) {
 				delay(10);
 
 				for (; p.col > you.col; p.col--)
-					chk(&p);
+					chk(&p, door);
 			} else {
 				for (p.col = you.col - 1; p.col >= ps->col; p.col--)
 					pchar(&p, '<');
@@ -773,7 +773,7 @@ int stretch(const struct point* ps, struct point dungeon) {
 				delay(10);
 
 				for (; p.col < you.col; p.col++)
-					chk(&p);
+					chk(&p, door);
 			}
 
 			return 1;
@@ -866,7 +866,7 @@ void win(const struct point* ps) {
 	}
 }
 
-int pushsnake(struct point bounds) {
+int pushsnake(struct point bounds, struct point escape) {
 	int i, bonus;
 	int issame = 0;
 	struct point tmp;
@@ -891,7 +891,7 @@ int pushsnake(struct point bounds) {
 	for (i = 4; i >= 0; i--)
 		snake[i + 1] = snake[i];
 
-	chase(&snake[0], &snake[1], bounds);
+	chase(&snake[0], &snake[1], bounds, escape);
 	pchar(&snake[1], SNAKETAIL);
 	pchar(&snake[0], SNAKEHEAD);
 
@@ -905,7 +905,7 @@ int pushsnake(struct point bounds) {
 			delay(30);
 
 			if (bonus == i) {
-				spacewarp(1, bounds);
+				spacewarp(1, bounds, escape);
 				logit("bonus", bounds);
 				flushi();
 				return 1;
@@ -929,7 +929,7 @@ int pushsnake(struct point bounds) {
 	return 0;
 }
 
-int chk(const struct point* sp) {
+int chk(const struct point* sp, struct point way_out) {
 	int j;
 
 	if (same(sp, &money)) {
@@ -937,7 +937,7 @@ int chk(const struct point* sp) {
 		return 2;
 	}
 
-	if (same(sp, &finish)) {
+	if (same(sp, &way_out)) {
 		pchar(sp, GOAL);
 		return 3;
 	}
