@@ -1,11 +1,8 @@
-# This file is read by configure and is used during the build of the
-# Debian package.
+# This file is read by configure and is used to provide defaults
+# to simplify configuration.
 
 # Don't run configure interactively.
-bsd_games_cfg_non_interactive=y
-
-# Install into here for building the package.
-bsd_games_cfg_install_prefix=`pwd`/debian/bsdgames
+bsd_games_cfg_non_interactive=n
 
 # Do not build or install these games:
 bsd_games_cfg_no_build_dirs="dm banner fortune factor"
@@ -28,9 +25,6 @@ bsd_games_cfg_use_dot_so=symlinks
 
 # I'll handle manpage compressing.
 bsd_games_cfg_gzip_manpages=n
-
-# Policy says to use /usr/bin/pager by default.
-bsd_games_cfg_pager=/usr/bin/pager
 
 # Always use the same wordlist for boggle, and don't use web2, it's too
 # big. Instead, use the union of the wenglish and wbritish wordlists.
