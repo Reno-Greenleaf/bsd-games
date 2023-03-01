@@ -751,33 +751,31 @@ int stretch(const struct point* ps, struct point dungeon, struct point door) {
 		}
 
 		return 1;
-	} else
-		if ((abs(ps->line - you.line) < (dungeon.line / 7))
-		    && (you.col != ps->col)) {
-			p.line = you.line;
+	} else if ((abs(ps->line - you.line) < (dungeon.line / 7)) && (you.col != ps->col)) {
+		p.line = you.line;
 
-			if (you.col < ps->col) {
-				for (p.col = you.col + 1; p.col <= ps->col; p.col++)
-					pchar(&p, '>');
+		if (you.col < ps->col) {
+			for (p.col = you.col + 1; p.col <= ps->col; p.col++)
+				pchar(&p, '>');
 
-				refresh();
-				delay(10);
+			refresh();
+			delay(10);
 
-				for (; p.col > you.col; p.col--)
-					chk(&p, door);
-			} else {
-				for (p.col = you.col - 1; p.col >= ps->col; p.col--)
-					pchar(&p, '<');
+			for (; p.col > you.col; p.col--)
+				chk(&p, door);
+		} else {
+			for (p.col = you.col - 1; p.col >= ps->col; p.col--)
+				pchar(&p, '<');
 
-				refresh();
-				delay(10);
+			refresh();
+			delay(10);
 
-				for (; p.col < you.col; p.col++)
-					chk(&p, door);
-			}
-
-			return 1;
+			for (; p.col < you.col; p.col++)
+				chk(&p, door);
 		}
+
+		return 1;
+	}
 
 	return 0;
 }

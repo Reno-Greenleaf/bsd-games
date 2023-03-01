@@ -55,6 +55,11 @@ int pushsnake(struct point, struct point);
  * May come in handy when redrawing individual points isn't enough.
  */
 void setup(struct point, struct point);
+
+/**
+ * Points in a direction a player might want to go.
+ * Helps to orient a player relative to exit or a treasure.
+ */
 void snap(struct point, struct point);
 
 /**
@@ -69,6 +74,10 @@ void snrand(struct point*, struct point, struct point);
  */
 void spacewarp(int, struct point, struct point);
 void stop(int) __attribute__((__noreturn__));
+
+/**
+ * Helper for snap().
+ */
 int stretch(const struct point*, struct point, struct point);
 
 /**
