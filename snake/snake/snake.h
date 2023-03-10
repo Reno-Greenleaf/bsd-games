@@ -5,14 +5,14 @@ struct point {
     int col, line;
 };
 
-void chase(struct point*, struct point*, struct point, struct point);
+void chase(struct point*, struct point*, struct point, struct point, struct point);
 
 /**
  * Restore a point.
  * In case something was manually drawn at a given point (effect, UI element etc.),
  * the function erases it, revealing whatever is beneath.
  */
-int chk(const struct point*, struct point);
+int chk(const struct point*, struct point, struct point);
 
 /**
  * Draw the level/box/room/location.
@@ -34,7 +34,7 @@ void logit(const char*, struct point);
  * Entry point for the application.
  */
 int main(int, char**);
-void mainloop(struct point, struct point) __attribute__((__noreturn__));
+void mainloop(struct point, struct point, struct point*) __attribute__((__noreturn__));
 
 /**
  * Shortcut to update a point with new coordinates.
@@ -48,37 +48,37 @@ struct point* point(struct point*, int, int);
  * If second argument (flag) is set, write more details.
  */
 int post(int, int);
-int pushsnake(struct point, struct point);
+int pushsnake(struct point, struct point, struct point);
 
 /**
  * Redraw (almost) everything.
- * May come in handy when redrawing individual points isn't enough.
+ * It may come in handy when redrawing individual points isn't enough.
  */
-void setup(struct point, struct point);
+void setup(struct point, struct point, struct point);
 
 /**
  * Points in a direction a player might want to go.
  * Helps to orient a player relative to exit or a treasure.
  */
-void snap(struct point, struct point);
+void snap(struct point, struct point, struct point);
 
 /**
  * Move given point to random coordinates.
  * Pretty much all objects/creatures are placed randomly within a level.
  */
-void snrand(struct point*, struct point, struct point);
+void snrand(struct point*, struct point, struct point, struct point);
 
 /**
  * Move main character to a random position (with a penalty).
  * It's useful for escaping snakes clutches.
  */
-void spacewarp(int, struct point, struct point);
+void spacewarp(int, struct point, struct point, struct point);
 void stop(int) __attribute__((__noreturn__));
 
 /**
  * Helper for snap().
  */
-int stretch(const struct point*, struct point, struct point);
+int stretch(const struct point*, struct point, struct point, struct point);
 
 /**
  * Play game over (loss) animation.
